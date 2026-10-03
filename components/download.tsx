@@ -3,8 +3,10 @@ import { images, imageIds, type ImageId } from "@/lib/images";
 import type { Release } from "@/lib/releases";
 import { links } from "@/lib/site";
 
+/* Counted in 1024s, as browsers' download lists and Windows Explorer do, so the
+   size here is the one people see once the ISO is on their disk. */
 function gigabytes(bytes: number) {
-  return `${(bytes / 1e9).toFixed(1)} GB`;
+  return `${(bytes / 1024 ** 3).toFixed(1)} GB`;
 }
 
 /* 44.20261003 is the build of 3 October 2026. */
