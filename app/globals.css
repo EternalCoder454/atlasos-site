@@ -215,6 +215,33 @@
   }
 }
 
+/* The screenshot viewer (components/lightbox.tsx) fades in and the picture
+   grows into place. The page behind it holds still while it's open; the
+   gutter stays, so nothing shifts sideways when the scrollbar goes. These
+   are a control's own transitions, so they stay in CSS beside the hero's;
+   components/motion.tsx is for what moves as you scroll. */
+.lightbox[open] {
+  animation: lightbox-fade 0.2s ease-out;
+}
+.lightbox[open]::backdrop {
+  animation: lightbox-fade 0.2s ease-out;
+}
+.lightbox[open] .lightbox-body {
+  animation: rise 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  --rise: 12px;
+}
+@keyframes lightbox-fade {
+  from {
+    opacity: 0;
+  }
+}
+html {
+  scrollbar-gutter: stable;
+}
+html:has(.lightbox[open]) {
+  overflow: hidden;
+}
+
 /* Off screen, the loops wait (components/motion.tsx sets this). */
 [data-offscreen],
 [data-offscreen] * {
@@ -227,7 +254,10 @@
   .twinkle-a,
   .twinkle-b,
   .orbit,
-  .orbit-dot {
+  .orbit-dot,
+  .lightbox[open],
+  .lightbox[open]::backdrop,
+  .lightbox[open] .lightbox-body {
     animation: none;
   }
   .meteor {

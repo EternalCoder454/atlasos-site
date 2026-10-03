@@ -1,5 +1,6 @@
 import { Download } from "@/components/download";
 import { MemoryBars } from "@/components/memory-bars";
+import { Lightbox } from "@/components/lightbox";
 import { Motion } from "@/components/motion";
 import { Screenshot } from "@/components/screenshot";
 import { Horizon, Orbits, Starfield } from "@/components/space";
@@ -445,6 +446,7 @@ export default async function Home() {
         <Download releases={releases} />
       </main>
       <Footer />
+      <Lightbox />
       <Motion />
     </>
   );
