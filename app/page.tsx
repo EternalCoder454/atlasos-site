@@ -2,6 +2,7 @@ import { Download } from "@/components/download";
 import { MemoryBars } from "@/components/memory-bars";
 import { Motion } from "@/components/motion";
 import { Screenshot } from "@/components/screenshot";
+import { Horizon, Orbits, Starfield } from "@/components/space";
 import { Terminal } from "@/components/terminal";
 import { currentReleases } from "@/lib/releases";
 import { links, site } from "@/lib/site";
@@ -48,7 +49,8 @@ const heroWords = ["build things.", "write code.", "ship software.", "self-host.
 
 function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden pb-20 pt-16 sm:pt-24">
+    <section id="top" className="relative isolate overflow-hidden pb-20 pt-16 sm:pt-24">
+      <Starfield meteors />
       {/* The wallpaper's two colours, as light behind the screenshot. */}
       <div
         data-glow
@@ -72,8 +74,8 @@ function Hero() {
           </span>
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-2 sm:text-xl">
-          AtlasOS is Fedora and KDE Plasma, tuned and trimmed. Your tools are already installed,
-          updates wait until you&apos;re ready, and if one ever goes wrong, it rolls itself back.
+          Fedora and KDE Plasma, tuned and trimmed. Your tools come installed, updates wait until
+          you&apos;re ready, and a bad one rolls itself back.
         </p>
         <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
           <a href="#download" className="rounded-xl bg-violet-deep px-6 py-3.5 font-semibold text-white transition-colors hover:bg-violet">
@@ -83,9 +85,9 @@ function Hero() {
             Or switch from Fedora Atomic <span aria-hidden="true">→</span>
           </a>
         </div>
-        <p className="mt-6 font-mono text-xs text-text-3">Fedora 44 · KDE Plasma 6 · Free and open source</p>
 
-        <figure className="mt-14 sm:mt-16">
+        <figure className="relative mt-14 sm:mt-16">
+          <Horizon />
           <div data-tilt className="origin-bottom overflow-hidden rounded-[var(--radius-card)] border border-line-strong/60 shadow-[0_30px_80px_-30px_rgba(10,6,40,0.9)]">
             <Screenshot
               name="desktop"
@@ -174,19 +176,26 @@ function Updates() {
               alt="Atlas Updater in the dark theme, showing AtlasOS is up to date, with the current, ready and previous versions listed."
             />
           </div>
-          <div className="relative">
-            {/* Drawn over the track as you read down (components/motion.tsx). */}
-            <span data-draw aria-hidden="true" className="absolute -left-px top-0 h-full w-0.5 origin-top bg-violet" />
-            <ol data-reveal-children className="relative space-y-8 border-l border-line-strong pl-7">
-            {updateSteps.map(([title, text]) => (
-              <li key={title} className="relative">
-                <span aria-hidden="true" className="absolute -left-[33px] top-1.5 size-2.5 rounded-full bg-violet ring-4 ring-ink-1" />
+          {/* Each step's dot sits on the line, centred on its title's first
+              line, and the line runs from the first dot to the last. The
+              violet is drawn down it as you read, filling each dot as it
+              gets there (components/motion.tsx). */}
+          <ol data-reveal-children className="space-y-8">
+            {updateSteps.map(([title, text], i) => (
+              <li key={title} className="relative pl-10">
+                {i < updateSteps.length - 1 && (
+                  <span aria-hidden="true" className="absolute left-1.5 top-3 h-[calc(100%+2rem)] w-0.5 rounded-full bg-line-strong">
+                    <span data-draw className="block size-full origin-top rounded-full bg-violet" />
+                  </span>
+                )}
+                <span aria-hidden="true" className="absolute left-0 top-[5px] flex size-3.5 items-center justify-center rounded-full border-2 border-violet bg-ink-1">
+                  <span data-dot className="size-1.5 rounded-full bg-violet-hi" />
+                </span>
                 <h3 className="font-semibold">{title}</h3>
                 <p className="mt-1.5 text-text-2">{text}</p>
               </li>
             ))}
-            </ol>
-          </div>
+          </ol>
         </div>
 
         <p data-reveal className="mt-12 max-w-3xl text-text-2">
@@ -284,44 +293,108 @@ function Looks() {
   );
 }
 
+/* Three separate lists, not two side by side: what's left out isn't
+   "replaced" by what's set up, and a two-column layout read that way. */
+const leftOut = [
+  ["Akonadi", "the database behind KDE's mail and calendar apps"],
+  ["Baloo", "the file indexer that runs in the background"],
+  ["KDE Connect", "phone pairing"],
+  ["Telemetry", "nothing reports home"],
+  ["Apps you'd never open", ""],
+];
+const swapped = [
+  ["Konsole", "Ghostty"],
+  ["Firefox", "Brave Origin"],
+];
+
 function Less() {
   return (
     <section aria-labelledby="less-title" className="border-t border-line py-20 sm:py-28">
-      <div className="wrap grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
-        <div data-reveal-children>
+      <div className="wrap">
+        <div data-reveal-children className="max-w-2xl">
           <h2 id="less-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Less, on purpose.
           </h2>
           <p className="mt-4 text-lg text-text-2">
-            No pile of apps you&apos;ll never open, and nothing reporting home.
+            No pile of apps you&apos;ll never open, and nothing reporting home. What&apos;s left is
+            what you&apos;ll use.
           </p>
         </div>
-        <div data-reveal-children className="grid gap-10 sm:grid-cols-2">
-          <div>
-            <h3 className="font-mono text-sm text-text-3">Left out</h3>
-            <ul data-strikes className="mt-4 space-y-2.5">
-              {["Akonadi", "The Baloo file indexer", "KDE Connect", "Telemetry", "Apps you would never open"].map((x) => (
-                <li key={x} className="text-text-2">
+
+        <div data-reveal-children className="mt-12 grid gap-6 md:grid-cols-2">
+          <div className="rounded-[var(--radius-card)] border border-line bg-ink-1 p-6 md:row-span-2">
+            <h3 className="font-semibold">Not installed</h3>
+            <ul data-strikes className="mt-4 space-y-3">
+              {leftOut.map(([name, what]) => (
+                <li key={name}>
                   {/* A drawn line rather than line-through, so it can be crossed off. */}
-                  <span className="relative">
-                    {x}
+                  <span className="relative text-text-2">
+                    {name}
                     <span data-strike aria-hidden="true" className="absolute inset-x-0 top-[55%] h-px origin-left bg-text-3/80" />
                   </span>
+                  {what && <span className="block text-sm text-text-3">{what}</span>}
                 </li>
               ))}
             </ul>
           </div>
-          <div>
-            <h3 className="font-mono text-sm text-text-3">In their place</h3>
-            <ul className="mt-4 space-y-2.5 text-text-2">
-              <li>Brave Origin as the browser</li>
-              <li>Flathub, set up, for everything else</li>
+
+          <div className="rounded-[var(--radius-card)] border border-line bg-ink-1 p-6">
+            <h3 className="font-semibold">Different picks</h3>
+            <ul className="mt-4 space-y-3">
+              {swapped.map(([from, to]) => (
+                <li key={from} className="flex flex-wrap items-baseline gap-x-2.5 text-text-2">
+                  <span className="text-text-3">{from}</span>
+                  <span aria-hidden="true" className="text-violet">→</span>
+                  <span className="sr-only">swapped for</span>
+                  <span className="font-medium text-text">{to}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rounded-[var(--radius-card)] border border-line bg-ink-1 p-6">
+            <h3 className="font-semibold">Ready when you need it</h3>
+            <ul className="mt-4 space-y-3 text-text-2">
+              <li>Flathub, set up, for every other app</li>
               <li>
-                Crash reports off by default. Turn them on and you read each one in full before
-                it goes. <a className={link} href={links.privacy}>Privacy</a>
+                Crash reports, off until you turn them on. Then you see each one in full and
+                decide whether it goes. <a className={link} href={links.privacy}>Privacy</a>
               </li>
             </ul>
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* What the name is about. Atlas holds up the sky; AtlasOS starts with one
+   desk. Honest about the size, open about the aim. */
+function Ethos() {
+  return (
+    <section aria-labelledby="ethos-title" className="relative isolate overflow-hidden border-t border-line py-20 sm:py-28">
+      <Starfield />
+      <div className="wrap relative grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div data-reveal-children>
+          <h2 id="ethos-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Built to hold things up.
+          </h2>
+          <p className="mt-4 text-lg text-text-2">
+            In the old story, Atlas carries the sky. AtlasOS starts smaller: your machine, and the
+            work you do on it, every day.
+          </p>
+          <p className="mt-4 text-text-2">
+            So the whole system is one signed image. Every change is tested in a virtual machine
+            before it&apos;s ticked off, the last version is always kept, and a version that fails
+            its startup checks hands back to the last good one.
+          </p>
+          <p className="mt-4 text-text-2">
+            The aim is to keep earning more weight to carry: a system people can trust with the
+            things that hold everything else up.
+          </p>
+        </div>
+        <div data-reveal>
+          <Orbits />
         </div>
       </div>
     </section>
@@ -368,6 +441,7 @@ export default async function Home() {
         <Numbers />
         <Looks />
         <Less />
+        <Ethos />
         <Download releases={releases} />
       </main>
       <Footer />

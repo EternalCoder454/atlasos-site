@@ -75,12 +75,15 @@
 /* Motion.
 
    The caret: a thin bar that blinks while it waits, like a terminal's, and
-   holds still while it types (data-busy). A few blinks each time it waits,
-   then it stays lit, so nothing on the page blinks for more than about five
-   seconds. An empty inline, so it takes no width and gives the line no new
-   place to wrap. */
+   holds still while it types (data-busy). It carries a word joiner, an
+   invisible character that can't be broken around, so it always sits on a
+   real line of text, as tall as that line, even when nothing is typed
+   before it, and never gives the line a new place to wrap. */
 .caret {
   position: relative;
+}
+.caret::before {
+  content: "\2060";
 }
 .caret::after {
   content: "";
@@ -92,7 +95,7 @@
   width: var(--caret-width, 2px);
   border-radius: 1px;
   background: var(--color-violet-hi);
-  animation: caret-blink 1.06s step-end 5;
+  animation: caret-blink 1.06s step-end infinite;
 }
 .caret[data-busy]::after {
   animation: none;
@@ -122,13 +125,105 @@
 }
 .hero-in > :nth-child(2) { animation-delay: 80ms; }
 .hero-in > :nth-child(3) { animation-delay: 160ms; }
-.hero-in > :nth-child(4) { animation-delay: 220ms; }
-.hero-in > :nth-child(5) { animation-name: rise-only; animation-duration: 1.1s; }
+.hero-in > :nth-child(4) { animation-name: rise-only; animation-duration: 1.1s; }
+
+/* Space (components/space.tsx). Stars twinkle, now and then one falls,
+   and the orbits turn, slowly and for as long as you look. */
+.twinkle-a {
+  animation: twinkle 5.5s ease-in-out infinite alternate;
+}
+.twinkle-b {
+  animation: twinkle 8s ease-in-out -3s infinite alternate;
+}
+@keyframes twinkle {
+  to {
+    opacity: 0.35;
+  }
+}
+
+/* A short streak of light, crossing in the first few percent of its
+   cycle and gone for the rest. */
+.meteor {
+  position: absolute;
+  width: 140px;
+  height: 1px;
+  rotate: -28deg;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(195, 184, 255, 0.4) 30%, transparent);
+  opacity: 0;
+  animation: meteor var(--period, 13s) linear var(--delay, 0s) infinite;
+}
+@keyframes meteor {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  7% {
+    opacity: 0;
+    translate: -320px 170px;
+  }
+  100% {
+    opacity: 0;
+    translate: -320px 170px;
+  }
+}
+
+/* The planet's edge: dark ground, a thin lit rim, and the atmosphere's
+   glow above it. */
+.horizon {
+  background: radial-gradient(ellipse at 50% 0%, #1b173d, #0e0c24 55%);
+  box-shadow:
+    inset 0 1px 0 rgba(195, 184, 255, 0.45),
+    inset 0 18px 40px -20px rgba(138, 122, 244, 0.45),
+    0 -10px 60px -6px rgba(138, 122, 244, 0.35),
+    0 -30px 140px -10px rgba(247, 168, 210, 0.12);
+}
+
+.orbit-plane {
+  transform: rotate(-16deg) rotateX(66deg);
+  transform-style: preserve-3d;
+}
+.orbit {
+  transform-style: preserve-3d;
+  animation: orbit-spin var(--period) linear infinite var(--dir);
+}
+.orbit-dot {
+  transform: translate(-50%, -50%) rotateX(-66deg);
+  animation: orbit-face var(--period) linear infinite var(--dir);
+}
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes orbit-face {
+  from {
+    transform: translate(-50%, -50%) rotateZ(0deg) rotateX(-66deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotateZ(-360deg) rotateX(-66deg);
+  }
+}
+
+/* Off screen, the loops wait (components/motion.tsx sets this). */
+[data-offscreen],
+[data-offscreen] * {
+  animation-play-state: paused !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .caret::after,
-  .hero-in > * {
+  .hero-in > *,
+  .twinkle-a,
+  .twinkle-b,
+  .orbit,
+  .orbit-dot {
     animation: none;
+  }
+  .meteor {
+    display: none;
   }
 }
 
@@ -146,6 +241,9 @@ html.motion [data-tilt] {
 }
 html.motion [data-draw] {
   transform: scaleY(0);
+}
+html.motion [data-dot] {
+  transform: scale(0);
 }
 html.motion [data-strike] {
   transform: scaleX(0);

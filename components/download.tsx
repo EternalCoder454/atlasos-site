@@ -77,6 +77,15 @@ function Option({ id, release }: { id: ImageId; release: Release | null }) {
   );
 }
 
+const requirements = [
+  ["Processor", "64-bit Intel or AMD, 2 cores", "4 cores or more"],
+  ["Memory", "4 GB", "8 GB or more"],
+  ["Storage", "40 GB", "64 GB or more, on an SSD"],
+  ["Graphics", "Anything with an open-source driver: Intel, AMD, or NVIDIA with nouveau", "Intel or AMD; NVIDIA GeForce GTX 16 / RTX 20 series or newer, with the NVIDIA ISO"],
+  ["Firmware", "UEFI", "UEFI"],
+  ["Internet", "To install and for updates", "The same"],
+];
+
 export function Download({ releases }: { releases: Record<ImageId, Release | null> }) {
   const example = releases.atlasos?.file ?? "atlasos-44.YYYYMMDD.iso";
   return (
@@ -104,7 +113,7 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
           is busy, try again in a few minutes.
         </p>
 
-        <div data-reveal-children className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-2">
+        <div data-reveal-children className="mt-14 max-w-3xl">
           <div>
             <h3 className="text-xl font-semibold">Install it</h3>
             <ol className="mt-5 space-y-5">
@@ -136,28 +145,43 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
               ))}
             </ol>
           </div>
+        </div>
 
-          <div>
-            <h3 className="text-xl font-semibold">What it needs</h3>
-            <dl className="mt-5 divide-y divide-line rounded-[var(--radius-card)] border border-line text-sm">
-              {[
-                ["Processor", "64-bit Intel or AMD, 2 cores", "4 cores or more"],
-                ["Memory", "4 GB", "8 GB or more"],
-                ["Storage", "30 GB", "64 GB or more, on an SSD"],
-                ["Firmware", "UEFI", "UEFI"],
-                ["Internet", "To install and for updates", ""],
-              ].map(([what, min, rec]) => (
-                <div key={what} className="grid grid-cols-[6.5rem_1fr] gap-3 px-4 py-3 sm:grid-cols-[7rem_1fr_1fr]">
-                  <dt className="text-text-3">{what}</dt>
-                  <dd className="text-text">{min}</dd>
-                  <dd className="col-start-2 text-text-2 sm:col-start-auto">{rec && <><span className="sm:hidden">Better: </span>{rec}</>}</dd>
-                </div>
-              ))}
-            </dl>
-            <p className="mt-3 text-sm text-text-3">
-              Minimum, then recommended. AtlasOS is tuned for and tested on 8 GB.
-            </p>
+        {/* A real table, with its column headings. On a phone each row
+            stacks, labelled, rather than squeezing three columns in. The
+            explicit roles keep it a table to screen readers when its
+            display changes (Safari drops the semantics otherwise). */}
+        <div data-reveal className="mt-14">
+          <h3 className="text-xl font-semibold">System requirements</h3>
+          <div className="mt-5 overflow-hidden rounded-[var(--radius-card)] border border-line">
+            <table role="table" className="w-full text-left max-sm:block">
+              <thead role="rowgroup" className="bg-ink-2/60 text-sm max-sm:hidden">
+                <tr role="row">
+                  <th role="columnheader" scope="col" className="w-36 px-5 py-3 font-medium text-text-3"><span className="sr-only">Part</span></th>
+                  <th role="columnheader" scope="col" className="px-5 py-3 font-semibold text-text">Minimum</th>
+                  <th role="columnheader" scope="col" className="px-5 py-3 font-semibold text-text">Recommended</th>
+                </tr>
+              </thead>
+              <tbody role="rowgroup" className="divide-y divide-line max-sm:block">
+                {requirements.map(([what, min, rec]) => (
+                  <tr role="row" key={what} className="max-sm:block max-sm:px-4 max-sm:py-4">
+                    <th role="rowheader" scope="row" className="px-5 py-4 align-top font-medium text-text-3 max-sm:block max-sm:p-0 max-sm:text-text">
+                      {what}
+                    </th>
+                    <td role="cell" className="px-5 py-4 align-top text-text max-sm:mt-1.5 max-sm:block max-sm:p-0 max-sm:text-text-2">
+                      <span className="text-text-3 sm:hidden">Minimum: </span>
+                      {min}
+                    </td>
+                    <td role="cell" className="px-5 py-4 align-top text-text-2 max-sm:mt-1 max-sm:block max-sm:p-0">
+                      <span className="text-text-3 sm:hidden">Recommended: </span>
+                      {rec}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+          <p className="mt-3 text-sm text-text-3">AtlasOS is tuned for and tested on 8 GB of memory.</p>
         </div>
 
         <div id="switch" data-reveal className="mt-16 rounded-[var(--radius-card)] border border-line bg-ink-0 p-6 sm:p-8">

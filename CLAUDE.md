@@ -11,6 +11,10 @@ README.md for how downloads are protected and how to deploy.
 - Animation is vanilla Motion, all in `components/motion.tsx`: `animate` from
   `motion/mini`, plus `inView`, `scroll` and `stagger` from `motion`. No
   `motion/react`. The page marks what moves with data attributes.
+- The space decoration (stars, shooting stars, the horizon, the orbits) is
+  `components/space.tsx`, animated in CSS in `globals.css`. Ambient loops
+  (caret, hero words, glow, stars, orbits) run for as long as they're on
+  screen; the user wants them to keep going. Reduced motion stills them all.
 - The server renders every element where it ends up. Starting points go in
   `globals.css` under `html.motion`, which the head script in
   `app/layout.tsx` sets only when motion is allowed, so reduced motion and

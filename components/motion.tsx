@@ -61,10 +61,8 @@ function countUp(el: HTMLElement, delay: number, alive: () => boolean) {
 }
 
 /* The hero's last words, typed, deleted and typed again, like someone
-   trying a few, once round and back to the first. Only while the hero is
-   on screen. */
+   trying a few, round and round. Only while the hero is on screen. */
 function typeWords(el: HTMLElement, caret: HTMLElement, words: string[]) {
-  let done = false;
   let w = 0;
   let n = words[0].length;
   let phase: "hold" | "delete" | "type" = "hold";
@@ -80,7 +78,6 @@ function typeWords(el: HTMLElement, caret: HTMLElement, words: string[]) {
       el.textContent = words[w].slice(0, n);
       if (n > 0) return later(35);
       w = (w + 1) % words.length;
-      done = w === 0;
       phase = "type";
       return later(320);
     }
@@ -89,12 +86,12 @@ function typeWords(el: HTMLElement, caret: HTMLElement, words: string[]) {
     if (n < words[w].length) return later(55 + Math.random() * 60);
     phase = "hold";
     delete caret.dataset.busy;
-    if (!done) later(2600);
+    later(2600);
   }
   return {
     start: () => {
       clearTimeout(timer);
-      if (!done) later(phase === "hold" ? 2600 : 60);
+      later(phase === "hold" ? 2600 : 60);
     },
     stop: () => clearTimeout(timer),
   };
@@ -182,6 +179,17 @@ function setUp(moving: boolean, alive: () => boolean, stops: VoidFunction[]) {
   }
 
   if (moving) {
+    /* Stars, nearer ones drifting faster, as you scroll past them. */
+    for (const el of all("[data-parallax]")) {
+      const speed = Number(el.dataset.parallax);
+      stops.push(
+        scroll(animate(el, { transform: ["none", `translateY(${Math.round(speed * 600)}px)`] }, { ease: "linear" }), {
+          target: el.closest("section") ?? el,
+          offset: ["start end", "end start"],
+        }),
+      );
+    }
+
     for (const el of all("[data-reveal], [data-reveal-children]")) {
       /* Already scrolled past (a reload partway down, or a link to
          #download): just there. */
@@ -210,22 +218,53 @@ function setUp(moving: boolean, alive: () => boolean, stops: VoidFunction[]) {
       );
     }
 
-    /* The wallpaper's light, drifting slowly. */
+    /* The wallpaper's light, drifting slowly, while it's on screen. */
     for (const el of all("[data-glow]")) {
       const glow = animate(
         el,
         { transform: ["scale(1) rotate(0deg)", "scale(1.12) rotate(10deg)"], opacity: [0.3, 0.45] },
-        { duration: 9, repeat: 1, repeatType: "reverse", ease: "easeInOut" },
+        { duration: 9, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" },
       );
-      stops.push(() => glow.stop());
+      stops.push(
+        inView(el, () => {
+          glow.play();
+          return () => glow.pause();
+        }),
+        () => glow.stop(),
+      );
     }
 
-    /* The update timeline's line, drawn as you read down it. */
+    /* The stars and orbits loop in CSS; off screen they wait. */
+    for (const el of all("[data-ambient]")) {
+      /* Paused until it's seen; inView calls back at once for what's
+         already on screen. */
+      el.dataset.offscreen = "";
+      stops.push(
+        inView(el, () => {
+          delete el.dataset.offscreen;
+          return () => (el.dataset.offscreen = "");
+        }),
+      );
+    }
+
+    /* The update timeline, drawn as you read down it. Each piece of line
+       runs from one dot to the next, and its tip stays on the same line
+       across the screen, so the drawing follows your eye and reaches each
+       dot just as that dot fills. */
+    const reading = "65%";
     for (const el of all("[data-draw]")) {
       stops.push(
         scroll(animate(el, { transform: ["scaleY(0)", "scaleY(1)"] }, { ease: "linear" }), {
           target: el.parentElement ?? el,
-          offset: ["start 75%", "end 55%"],
+          offset: [`start ${reading}`, `end ${reading}`],
+        }),
+      );
+    }
+    for (const el of all("[data-dot]")) {
+      stops.push(
+        scroll(animate(el, { transform: ["scale(0)", "scale(1)"] }, { ease: "linear" }), {
+          target: el.parentElement ?? el,
+          offset: [`start 72%`, `center ${reading}`],
         }),
       );
     }
