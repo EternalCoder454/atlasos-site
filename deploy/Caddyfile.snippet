@@ -1,0 +1,43 @@
+# The atlasos.eterneon.net block in /srv/matrix/caddy/Caddyfile, kept here so
+# the routing is in version control with the rest. Caddy runs in the matrix
+# stack, which mounts /srv/downloads/atlasos read-only at
+# /srv/atlasos-downloads. After editing the real one:
+#   docker exec matrix-caddy-1 caddy reload --config /etc/caddy/Caddyfile
+atlasos.eterneon.net {
+	header {
+		X-Content-Type-Options nosniff
+		Strict-Transport-Security "max-age=63072000"
+	}
+
+	# The ISOs: only through the signed links the site hands out, checked,
+	# rate limited and speed capped by the download server (atlasos-dl).
+	@iso path_regexp ^/dl/[^/]+\.iso$
+	handle @iso {
+		reverse_proxy atlasos-dl:8080 {
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	# Public and small: <image>.json, which CI checks and names the current
+	# version, and the checksums. Nothing else in the folder is served.
+	handle_path /dl/* {
+		root * /srv/atlasos-downloads
+		@public path_regexp ^/(atlasos(-nvidia)?\.json|atlasos(-nvidia)?-44\.[0-9]{8}\.iso\.sha256)$
+		handle @public {
+			header Cache-Control "public, max-age=60"
+			file_server
+		}
+		handle {
+			respond "Not found" 404
+		}
+	}
+
+	# The site. X-Real-IP is who the download links are signed for, so it
+	# is set here from the connection, replacing anything the client sent.
+	handle {
+		encode zstd gzip
+		reverse_proxy atlasos-site:3060 {
+			header_up X-Real-IP {remote_host}
+		}
+	}
+}

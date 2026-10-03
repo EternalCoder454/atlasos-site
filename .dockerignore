@@ -1,0 +1,9 @@
+# Secrets never go in an image.
+.env*
+
+.git
+.next
+node_modules
+npm-debug.log*
+deploy
+.claude

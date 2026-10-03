@@ -1,0 +1,368 @@
+import { Download } from "@/components/download";
+import { MemoryBars } from "@/components/memory-bars";
+import { Screenshot } from "@/components/screenshot";
+import { currentReleases } from "@/lib/releases";
+import { links, site } from "@/lib/site";
+
+/* The page is static, rebuilt at most every five minutes so the download
+   section picks up a new weekly ISO without a deploy. */
+export const revalidate = 300;
+
+const link = "text-violet-hi underline-offset-4 hover:underline";
+
+function Header() {
+  return (
+    <header className="sticky top-0 z-20 border-b border-line/70 bg-ink-0/85 backdrop-blur-md">
+      <div className="wrap flex h-16 items-center justify-between gap-6">
+        <a href="#top" className="flex items-center gap-2.5 font-semibold tracking-tight">
+          {/* eslint-disable-next-line @next/next/no-img-element -- a 3 KB SVG */}
+          <img src="/brand/atlas-mark.svg" alt="" width={28} height={28} className="size-7" />
+          AtlasOS
+        </a>
+        <nav aria-label="Main" className="flex items-center gap-1 text-sm sm:gap-2">
+          <a href="#tools" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Tools</a>
+          <a href="#updates" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Updates</a>
+          <a href="#looks" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Looks</a>
+          <a href={site.repo} className="rounded-md px-3 py-2 text-text-2 hover:text-text">GitHub</a>
+          <a href="#download" className="rounded-lg bg-violet-deep px-4 py-2 font-semibold text-white hover:bg-violet">
+            Download
+          </a>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+function Hero() {
+  return (
+    <section id="top" className="relative overflow-hidden pb-20 pt-16 sm:pt-24">
+      {/* The wallpaper's two colours, as light behind the screenshot. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-[22rem] h-[36rem] w-[64rem] -translate-x-1/2 rounded-full opacity-35 blur-3xl"
+        style={{ background: "radial-gradient(closest-side, #6858e2, transparent), radial-gradient(closest-side at 70% 60%, #f7a8d2, transparent)" }}
+      />
+      <div className="wrap relative">
+        <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-balance sm:text-6xl">
+          The Linux desktop for people who build things.
+        </h1>
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-2 sm:text-xl">
+          AtlasOS is Fedora and KDE Plasma, tuned and trimmed. Your tools are already installed,
+          updates wait until you&apos;re ready, and if one ever goes wrong, it rolls itself back.
+        </p>
+        <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <a href="#download" className="rounded-xl bg-violet-deep px-6 py-3.5 font-semibold text-white transition-colors hover:bg-violet">
+            Download the ISO
+          </a>
+          <a href="#switch" className="font-medium text-text-2 hover:text-text">
+            Or switch from Fedora Atomic <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <p className="mt-6 font-mono text-xs text-text-3">Fedora 44 · KDE Plasma 6 · Free and open source</p>
+
+        <figure className="mt-14 sm:mt-16">
+          <div className="overflow-hidden rounded-[var(--radius-card)] border border-line-strong/60 shadow-[0_30px_80px_-30px_rgba(10,6,40,0.9)]">
+            <Screenshot
+              name="desktop"
+              priority
+              sizes="(min-width: 72rem) 1104px, calc(100vw - 2rem)"
+              alt="The AtlasOS desktop: a menu bar along the top, a floating dock at the bottom, and the Dolphin file manager open over a sakura wallpaper."
+            />
+          </div>
+          <figcaption className="mt-3 text-sm text-text-3">
+            The menu bar on top, the dock at the bottom, Dolphin in AtlasOS Light.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+  );
+}
+
+const session: [string, string][] = [
+  ["gh repo clone you/project && cd project", ""],
+  ["mise use node@22", "Node, Python, Go and friends, per project"],
+  ["docker compose up -d", "Podman underneath, the commands you know"],
+  ["just test", ""],
+  ["toolbox enter", "a mutable Fedora when you need dnf"],
+  ["atlas", "Homebrew, JetBrains Toolbox, the update channel"],
+];
+
+function Tools() {
+  return (
+    <section id="tools" aria-labelledby="tools-title" className="border-t border-line py-20 sm:py-28">
+      <div className="wrap grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
+        <div>
+          <h2 id="tools-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Open a terminal and start.
+          </h2>
+          <p className="mt-4 text-lg text-text-2">
+            No afternoon of setup on a new machine. What you&apos;d install first is already there,
+            and the system itself stays out of your way.
+          </p>
+          <dl className="mt-8 space-y-5">
+            {[
+              ["Terminal", <><b className="font-semibold text-text">Ghostty</b> on Ctrl+Alt+T, and &ldquo;Open Ghostty Here&rdquo; in Dolphin.</>],
+              ["Containers", <>Podman with a <code className="text-sm">docker</code> command and compose. Toolbox and Distrobox for mutable environments.</>],
+              ["Runtimes", <><a className={link} href="https://mise.jdx.dev">mise</a> for Node, Python, Go and the rest.</>],
+              ["Command line", <>git, gh, just, jq, ripgrep, fd, btop, gdb, strace and perf.</>],
+              ["Editing", <>Kate by default, with file watch limits raised for big projects.</>],
+              ["Everything else", <><code className="text-sm">atlas</code>, a menu for Homebrew, Docker tools on Podman and JetBrains Toolbox. <a className={link} href={links.software}>Where software goes</a>.</>],
+            ].map(([term, text]) => (
+              <div key={term as string} className="grid gap-1 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+                <dt className="font-mono text-sm text-violet-hi sm:pt-0.5">{term}</dt>
+                <dd className="text-text-2">{text}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <figure className="lg:sticky lg:top-24">
+          <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-[#1e1d2b]">
+            <div className="flex items-center gap-2 border-b border-white/5 px-4 py-2.5">
+              <span className="size-3 rounded-full bg-white/10" />
+              <span className="size-3 rounded-full bg-white/10" />
+              <span className="size-3 rounded-full bg-white/10" />
+              <span className="ml-3 font-mono text-xs text-text-3">ghostty · ~/project</span>
+            </div>
+            <pre className="overflow-x-auto p-5 text-[13px] leading-7 sm:text-sm">
+              <code>
+                {session.map(([cmd, note]) => (
+                  <span key={cmd} className="block">
+                    <span className="select-none text-sakura">❯ </span>
+                    <span className="text-text">{cmd}</span>
+                    {note && <span className="block pl-4 text-text-3 sm:inline sm:pl-0"><span className="hidden sm:inline">  </span># {note}</span>}
+                  </span>
+                ))}
+                <span className="block">
+                  <span className="select-none text-sakura">❯ </span>
+                  <span className="inline-block h-4 w-2 translate-y-0.5 bg-violet-hi/80" />
+                </span>
+              </code>
+            </pre>
+          </div>
+          <figcaption className="mt-3 text-sm text-text-3">All of it there on first boot, nothing to add.</figcaption>
+        </figure>
+      </div>
+    </section>
+  );
+}
+
+const updateSteps = [
+  ["Downloads while you work", "Atlas Updater sits in the tray and fetches the next version in the background. The whole system is one tested, signed image, updated in one piece."],
+  ["Restarts when you say", "Restart now or pick a time. See what's new before you do, and update your Flatpak apps from the same window."],
+  ["Goes back in one click", "Don't like an update? Go Back returns you to the previous version, which is always kept."],
+  ["Rolls itself back", "If a new version fails its startup checks, AtlasOS boots the last good one on its own, and won't download that version again."],
+];
+
+function Updates() {
+  return (
+    <section id="updates" aria-labelledby="updates-title" className="border-t border-line bg-ink-1 py-20 sm:py-28">
+      <div className="wrap">
+        <div className="max-w-2xl">
+          <h2 id="updates-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Updates that wait for you.
+          </h2>
+          <p className="mt-4 text-lg text-text-2">
+            Nothing restarts in the middle of a build. Nothing half-installs. And a bad update
+            isn&apos;t your evening.
+          </p>
+        </div>
+
+        <div className="mt-12 grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]">
+          <div className="overflow-hidden rounded-[var(--radius-card)] border border-line">
+            <Screenshot
+              name="updater-dark"
+              sizes="(min-width: 72rem) 600px, (min-width: 64rem) 54vw, calc(100vw - 2rem)"
+              alt="Atlas Updater in the dark theme, showing AtlasOS is up to date, with the current, ready and previous versions listed."
+            />
+          </div>
+          <ol className="relative space-y-8 border-l border-line-strong pl-7">
+            {updateSteps.map(([title, text]) => (
+              <li key={title} className="relative">
+                <span aria-hidden="true" className="absolute -left-[33px] top-1.5 size-2.5 rounded-full bg-violet ring-4 ring-ink-1" />
+                <h3 className="font-semibold">{title}</h3>
+                <p className="mt-1.5 text-text-2">{text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <p className="mt-12 max-w-3xl text-text-2">
+          Two channels: <b className="font-semibold text-text">Stable</b>, weekly, and{" "}
+          <b className="font-semibold text-text">Testing</b>, daily, for the brave. Updates install
+          only if they carry the AtlasOS signature.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function Numbers() {
+  return (
+    <section aria-labelledby="numbers-title" className="border-t border-line py-20 sm:py-28">
+      <div className="wrap grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        <div>
+          <h2 id="numbers-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Half the memory, before you open anything.
+          </h2>
+          <p className="mt-4 text-lg text-text-2">
+            AtlasOS keeps what&apos;s good about Fedora and Plasma and drops what most people never
+            use, so your editor, your containers and your browser get the memory instead.
+          </p>
+          <p className="mt-4 text-text-2">
+            The desktop is ready about <b className="font-semibold text-text">8 seconds</b> after
+            the kernel starts.{" "}
+            <a className={link} href={links.optimization}>How it got there, change by change</a>.
+          </p>
+        </div>
+        <div className="rounded-[var(--radius-card)] border border-line bg-ink-1 p-6 sm:p-8">
+          <p className="mb-6 text-sm font-medium text-text">Memory in use at idle</p>
+          <MemoryBars />
+          <p className="mt-6 text-xs text-text-3">An 8 GB virtual machine, two minutes after login.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Looks() {
+  return (
+    <section id="looks" aria-labelledby="looks-title" className="border-t border-line py-20 sm:py-28">
+      <div className="wrap">
+        <div className="max-w-2xl">
+          <h2 id="looks-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Looks finished on the first boot.
+          </h2>
+          <p className="mt-4 text-lg text-text-2">
+            Plasma&apos;s own Breeze and KWin, set up properly, so nothing extra runs in the
+            background to make it look this way.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
+          <figure>
+            <div className="overflow-hidden rounded-[var(--radius-card)] border border-line">
+              <Screenshot
+                name="setup-appearance"
+                sizes="(min-width: 72rem) 540px, (min-width: 48rem) 46vw, calc(100vw - 2rem)"
+                alt="The first-run setup's Appearance page, choosing between Light and Dark."
+              />
+            </div>
+            <figcaption className="mt-3 text-sm text-text-3">First-run setup: Light or Dark, both from the logo&apos;s violets.</figcaption>
+          </figure>
+          <figure>
+            <div className="overflow-hidden rounded-[var(--radius-card)] border border-line">
+              <Screenshot
+                name="setup-launcher"
+                sizes="(min-width: 72rem) 540px, (min-width: 48rem) 46vw, calc(100vw - 2rem)"
+                alt="The first-run setup's App Launcher page in Dark, choosing between Modern and Classic, over the night sakura wallpaper."
+              />
+            </div>
+            <figcaption className="mt-3 text-sm text-text-3">Then your launcher: Modern, over the dock, or Classic, a compact list.</figcaption>
+          </figure>
+        </div>
+
+        <ul className="mt-12 grid gap-x-12 gap-y-3 text-text-2 sm:grid-cols-2">
+          {[
+            "A menu bar on top, a floating dock below, both see-through and blurred",
+            "Rounded windows, soft shadows and acrylic-style menus",
+            "Two themes, AtlasOS Light and Dark, and the wallpaper turns to night with Dark",
+            "Bibata cursors and Dracula icons",
+            "IBM Plex Sans for the interface, JetBrains Mono for code",
+            "A matching login and lock screen, and its own boot splash",
+          ].map((item) => (
+            <li key={item} className="flex gap-3">
+              <span aria-hidden="true" className="mt-2.5 size-1.5 shrink-0 rounded-full bg-sakura" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function Less() {
+  return (
+    <section aria-labelledby="less-title" className="border-t border-line py-20 sm:py-28">
+      <div className="wrap grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
+        <div>
+          <h2 id="less-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Less, on purpose.
+          </h2>
+          <p className="mt-4 text-lg text-text-2">
+            No pile of apps you&apos;ll never open, and nothing reporting home.
+          </p>
+        </div>
+        <div className="grid gap-10 sm:grid-cols-2">
+          <div>
+            <h3 className="font-mono text-sm text-text-3">Left out</h3>
+            <ul className="mt-4 space-y-2.5">
+              {["Akonadi", "The Baloo file indexer", "KDE Connect", "Telemetry", "Apps you would never open"].map((x) => (
+                <li key={x} className="text-text-2 line-through decoration-text-3/60">{x}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-mono text-sm text-text-3">In their place</h3>
+            <ul className="mt-4 space-y-2.5 text-text-2">
+              <li>Brave Origin as the browser</li>
+              <li>Flathub, set up, for everything else</li>
+              <li>
+                Crash reports off by default. Turn them on and you read each one in full before
+                it goes. <a className={link} href={links.privacy}>Privacy</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t border-line py-12 text-sm text-text-3">
+      <div className="wrap flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+        <div className="max-w-xl space-y-2">
+          <p>
+            AtlasOS is a personal project, built on{" "}
+            <a className={link} href="https://fedoraproject.org">Fedora</a>,{" "}
+            <a className={link} href="https://kde.org">KDE</a> and{" "}
+            <a className={link} href="https://bootc-dev.github.io/bootc/">bootc</a>. It&apos;s young:
+            keep backups, as you would anyway.
+          </p>
+          <p>Apache-2.0. Not affiliated with Fedora or KDE.</p>
+        </div>
+        <nav aria-label="Project" className="flex flex-wrap gap-x-6 gap-y-2">
+          <a className="hover:text-text" href={site.repo}>Source</a>
+          <a className="hover:text-text" href={site.installerRepo}>Installer</a>
+          <a className="hover:text-text" href={links.dev}>For developers</a>
+          <a className="hover:text-text" href={links.privacy}>Privacy</a>
+        </nav>
+      </div>
+    </footer>
+  );
+}
+
+export default async function Home() {
+  const releases = await currentReleases();
+  return (
+    <>
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-ink-2 focus:px-4 focus:py-2">
+        Skip to content
+      </a>
+      <Header />
+      <main id="main">
+        <Hero />
+        <Tools />
+        <Updates />
+        <Numbers />
+        <Looks />
+        <Less />
+        <Download releases={releases} />
+      </main>
+      <Footer />
+    </>
+  );
+}

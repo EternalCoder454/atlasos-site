@@ -1,0 +1,96 @@
+# The ISO download server, behind Caddy at atlasos.eterneon.net/dl/*.iso.
+#
+# Caddy serves the site and the small public files (<image>.json, .sha256);
+# only the ISOs come here, because Caddy can't cap connections or bandwidth
+# and these are 4 GB each. Every limit below is about keeping one person, one
+# script or one busy day from eating the VPS's uplink, which Matrix, Forgejo
+# and the other sites share.
+#
+# The official image runs this through envsubst at start, replacing only the
+# variables set in compose.yaml (${DOWNLOAD_SECRET} and the limits); nginx's
+# own $variables pass through.
+
+# One address: two downloads at a time (a browser and a retry, or a download
+# manager's two ranges). Everyone together: MAX_DOWNLOADS. Each download runs
+# at up to DOWNLOAD_RATE, so the most this can ever take is the product.
+limit_conn_zone $binary_remote_addr zone=per_ip:10m;
+limit_conn_zone $server_name zone=everyone:1m;
+# Requests, not downloads: a script hammering links that fail.
+limit_req_zone $binary_remote_addr zone=req_per_ip:10m rate=20r/m;
+
+# Caddy is the only thing that can reach this, over the matrix_inside
+# network, and it sets X-Real-IP to the real client.
+set_real_ip_from 172.16.0.0/12;
+real_ip_header X-Real-IP;
+
+# The query string carries the signature; it stays out of the log. The path
+# as asked for, not $uri, which an error page rewrites.
+map $request_uri $asked_path {
+	"~^(?<p>[^?]*)" $p;
+}
+log_format downloads '$remote_addr [$time_local] "$request_method $asked_path" $status '
+                     '$body_bytes_sent $request_time "$http_user_agent"';
+
+server {
+	listen 8080;
+	server_name atlasos-dl;
+	access_log /dev/stdout downloads;
+	server_tokens off;
+
+	sendfile on;
+	tcp_nopush on;
+	sendfile_max_chunk 512k;
+	max_ranges 1;
+	send_timeout 60s;
+	keepalive_timeout 15s;
+
+	location = /healthz {
+		access_log off;
+		return 204;
+	}
+
+	# /dl/atlasos-44.YYYYMMDD.iso?md5=…&expires=…, made by the site's
+	# /download/<image> route for one address and a few hours.
+	location ~ "^/dl/(?<iso>atlasos(-nvidia)?-44\.[0-9]{8}\.iso)$" {
+		limit_except GET { deny all; }
+
+		secure_link $arg_md5,$arg_expires;
+		secure_link_md5 "$secure_link_expires$uri$remote_addr ${DOWNLOAD_SECRET}";
+		# "" is a bad or missing signature, "0" an expired one.
+		if ($secure_link = "") { return 403; }
+		if ($secure_link = "0") { return 410; }
+
+		limit_req zone=req_per_ip burst=10 nodelay;
+		limit_req_status 429;
+		limit_conn per_ip ${PER_IP_DOWNLOADS};
+		limit_conn everyone ${MAX_DOWNLOADS};
+		limit_conn_status 503;
+		limit_rate ${DOWNLOAD_RATE};
+
+		alias /srv/iso/$iso;
+		types { }
+		default_type application/octet-stream;
+		add_header Content-Disposition 'attachment; filename="$iso"' always;
+		add_header Cache-Control "private, no-transform" always;
+		add_header X-Robots-Tag "noindex, nofollow" always;
+	}
+
+	location / {
+		return 404;
+	}
+
+	error_page 429 503 /errors/busy.html;
+	error_page 403 410 /errors/link.html;
+	error_page 404 /errors/missing.html;
+	location = /errors/busy.html {
+		internal;
+		root /usr/share/nginx;
+		add_header Cache-Control "no-store" always;
+		add_header Retry-After 120 always;
+	}
+	location ^~ /errors/ {
+		internal;
+		root /usr/share/nginx;
+		add_header Cache-Control "no-store" always;
+	}
+}
