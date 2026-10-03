@@ -45,12 +45,15 @@ if [ ! -s .env ]; then
 	umask 077
 	printf 'DOWNLOAD_SECRET=%s\n' "\$(head -c 48 /dev/urandom | base64 | tr -d '/+=\n')" >.env
 fi
-# The stack's own network, shared only with Caddy. Joining Caddy here as
-# well as in the matrix compose file means no Caddy restart is needed.
+# The stack's own network, shared only with Caddy. /srv/matrix/compose.yaml
+# lists it for Caddy, so it survives Caddy being recreated; connecting the
+# running Caddy here as well means no Caddy restart is needed.
 docker network inspect atlasos_inside >/dev/null 2>&1 ||
 	docker network create --subnet 172.29.0.0/24 atlasos_inside >/dev/null
-docker network inspect atlasos_inside --format '{{range .Containers}}{{.Name}} {{end}}' | grep -qw matrix-caddy-1 ||
-	docker network connect atlasos_inside matrix-caddy-1
+caddy=\$(docker ps -q --filter label=com.docker.compose.project=matrix --filter label=com.docker.compose.service=caddy)
+[ -n "\$caddy" ] || { echo "Caddy (the matrix stack's caddy service) isn't running"; exit 1; }
+docker inspect "\$caddy" --format '{{range \$net, \$_ := .NetworkSettings.Networks}}{{\$net}} {{end}}' | grep -qw atlasos_inside ||
+	docker network connect atlasos_inside "\$caddy"
 docker compose up -d --remove-orphans
 for i in \$(seq 1 30); do
 	sleep 2

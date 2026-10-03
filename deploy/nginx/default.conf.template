@@ -15,21 +15,17 @@
 set_real_ip_from ${INSIDE_SUBNET};
 real_ip_header X-Real-IP;
 
-# Who a limit applies to: the address, or for IPv6 its /64, which is what one
-# home or server gets. (The signature stays bound to the full address.)
-map $remote_addr $limit_key {
-	"~^(?<net>[0-9a-fA-F]*:[0-9a-fA-F]*:[0-9a-fA-F]*:[0-9a-fA-F]*):" $net;
-	default $binary_remote_addr;
-}
-
+# Limits are per address. The site has no AAAA record, so every client is
+# IPv4; with IPv6 the key would need to be the /64, which is what one home or
+# server gets (the site's own link limit already groups that way).
 # One address: PER_IP_DOWNLOADS at a time (a browser and a retry, or a
 # download manager's two ranges). Everyone together: MAX_DOWNLOADS. Each
 # download runs at up to DOWNLOAD_RATE, so the most this can ever take is
 # MAX_DOWNLOADS x DOWNLOAD_RATE.
-limit_conn_zone $limit_key zone=per_ip:10m;
+limit_conn_zone $binary_remote_addr zone=per_ip:10m;
 limit_conn_zone $server_name zone=everyone:1m;
 # Requests, not downloads: a script hammering links, good or bad.
-limit_req_zone $limit_key zone=req_per_ip:10m rate=20r/m;
+limit_req_zone $binary_remote_addr zone=req_per_ip:10m rate=20r/m;
 
 # The query string carries the signature; it stays out of the log. The path
 # as asked for, not $uri, which an error page rewrites.

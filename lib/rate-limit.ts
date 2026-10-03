@@ -18,9 +18,14 @@ const windows = new Map<string, { count: number; resetAt: number }>();
 
 /* Who a limit applies to. An IPv6 home or server gets a whole /64, so one
    address per key would give each of them 2^64 keys; the /64 is the
-   subscriber. The download server keys its limits the same way. */
+   subscriber. (The download server keys on the full address: the site has
+   no AAAA record, so no IPv6 client reaches it. Add one, and its limits
+   need the same grouping.) */
 export function limitKey(ip: string): string {
   if (!isIPv6(ip)) return ip;
+  /* ::ffff:1.2.3.4 is an IPv4 client. */
+  const mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/i.exec(ip);
+  if (mapped) return mapped[1];
   const full = ip.includes("::")
     ? (() => {
         const [head, tail] = ip.split("::");

@@ -23,12 +23,14 @@ on the VPS, with an `<image>.json` naming the current version.
   from the address that asked (`lib/signed-link.ts`).
 - Caddy sends `/dl/*.iso` to `atlasos-dl`, an nginx (`deploy/nginx`) that
   checks the signature (`secure_link`) and limits downloads: 2 at a time per
-  address, 12 in all, 3 MB/s each, 20 requests a minute per address. For
-  IPv6, an "address" is the /64. A client that stops reading loses its slot
-  after 15 seconds.
-- The route refuses to be embedded (`Sec-Fetch-Dest` other than `document`),
-  sends cross-site requests that weren't a click back to the page, and
-  ignores prefetches and HEAD, so none of those use up anyone's links.
+  address, 12 in all, 3 MB/s each, 20 requests a minute per address. A
+  client that stops reading loses its slot after 15 seconds. There's no
+  AAAA record; before adding one, key nginx's limits on the /64 (the link
+  limit already does).
+- The route refuses to be embedded (`Sec-Fetch-Dest` iframe, image and the
+  like), sends cross-site requests that weren't a click (no
+  `Sec-Fetch-User`) back to the page, and ignores prefetches and HEAD, so
+  none of those use up anyone's links.
 - The site and the download server are on their own Docker network,
   `atlasos_inside` (172.29.0.0/24), shared only with Caddy, because both
   trust the `X-Real-IP` header Caddy sets.

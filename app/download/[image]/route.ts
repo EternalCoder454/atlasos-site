@@ -30,6 +30,15 @@ export function HEAD() {
   return new Response(null, { status: 405, headers: { Allow: "GET", ...noStore } });
 }
 
+/* Where a page puts a resource rather than goes to it. "document" (a
+   click, a new tab, the address bar) and "empty" (Save Link As, download
+   managers) are people. */
+const embedded = new Set([
+  "audio", "audioworklet", "embed", "font", "frame", "iframe", "image", "manifest",
+  "object", "paintworklet", "report", "script", "serviceworker", "sharedworker",
+  "style", "track", "video", "worker", "xslt",
+]);
+
 export async function GET(request: NextRequest, ctx: RouteContext<"/download/[image]">) {
   const { image } = await ctx.params;
   if (!isImageId(image)) return page(404, "Not found", "There's no image by that name.");
@@ -51,7 +60,7 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/download/[im
      still pass, and still meet the limits below. */
   const dest = request.headers.get("sec-fetch-dest");
   const from = request.headers.get("sec-fetch-site");
-  if (dest && dest !== "document") {
+  if (dest && embedded.has(dest)) {
     return page(403, "Not like that", "Download links are for opening, not embedding.");
   }
   if (from && from !== "same-origin" && from !== "none" && request.headers.get("sec-fetch-user") !== "?1") {
