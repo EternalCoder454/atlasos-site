@@ -19,11 +19,21 @@ real_ip_header X-Real-IP;
 # IPv4; with IPv6 the key would need to be the /64, which is what one home or
 # server gets (the site's own link limit already groups that way).
 # One address: PER_IP_DOWNLOADS at a time (a browser and a retry, or a
-# download manager's two ranges). Everyone together: MAX_DOWNLOADS. Each
-# download runs at up to DOWNLOAD_RATE, so the most this can ever take is
-# MAX_DOWNLOADS x DOWNLOAD_RATE.
+# download manager's two ranges). Everyone together: MAX_DOWNLOADS (6).
 limit_conn_zone $binary_remote_addr zone=per_ip:10m;
 limit_conn_zone $server_name zone=everyone:1m;
+# How fast a download runs depends on how many were being sent when it
+# started, itself included ($connections_writing; nothing else here takes
+# long to send). The first two get 10 MB/s, so a quiet day downloads an
+# ISO in about six minutes; later ones get less. A download keeps the rate
+# it started with, so all six together never pass 2x10 + 2x5 + 2x3 = 36 MB/s
+# (about 300 Mbit/s), leaving the rest of the uplink to everything else.
+map $connections_writing $download_rate {
+	~^[0-2]$ 10m;
+	~^[34]$  5m;
+	default  3m;
+}
+
 # Requests, not downloads: a script hammering links, good or bad.
 limit_req_zone $binary_remote_addr zone=req_per_ip:10m rate=20r/m;
 
@@ -74,7 +84,7 @@ server {
 		limit_conn per_ip ${PER_IP_DOWNLOADS};
 		limit_conn everyone ${MAX_DOWNLOADS};
 		limit_conn_status 503;
-		limit_rate ${DOWNLOAD_RATE};
+		limit_rate $download_rate;
 
 		alias /srv/iso/$iso;
 		types { }

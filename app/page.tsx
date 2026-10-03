@@ -137,8 +137,8 @@ function Tools() {
         <figure data-reveal className="lg:sticky lg:top-24">
           <Terminal />
           <p className="sr-only">
-            A terminal session: clone a project, pick a Node version with mise, start containers with
-            docker compose, run the tests, enter a toolbox, and open the atlas menu.
+            A terminal session on AtlasOS: clone a project with gh, install Node 22 with mise, run the
+            tests with just, start Postgres and Valkey with docker compose, and list the atlas menu.
           </p>
           <figcaption className="mt-3 text-sm text-text-3">All of it there on first boot, nothing to add.</figcaption>
         </figure>

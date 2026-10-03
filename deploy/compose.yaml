@@ -35,17 +35,17 @@ services:
     networks: [inside]
 
   # The ISOs, only by signed link, with per-address, total and speed limits.
-  # Most bandwidth it can use: MAX_DOWNLOADS x DOWNLOAD_RATE (12 x 3 MB/s,
-  # about 300 Mbit/s), leaving the rest of the uplink to everything else.
+  # Most bandwidth it can use: 36 MB/s, about 300 Mbit/s, leaving the rest of
+  # the uplink to everything else. The speeds are in nginx/default.conf.template
+  # and add up for MAX_DOWNLOADS; change them together.
   atlasos-dl:
     image: nginx:1.30-alpine
     restart: unless-stopped
     env_file: .env
     environment:
       NGINX_ENTRYPOINT_QUIET_LOGS: "1"
-      MAX_DOWNLOADS: "12"
+      MAX_DOWNLOADS: "6"
       PER_IP_DOWNLOADS: "2"
-      DOWNLOAD_RATE: 3m
       INSIDE_SUBNET: 172.29.0.0/24
     volumes:
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro

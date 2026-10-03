@@ -23,7 +23,12 @@ on the VPS, with an `<image>.json` naming the current version.
   from the address that asked (`lib/signed-link.ts`).
 - Caddy sends `/dl/*.iso` to `atlasos-dl`, an nginx (`deploy/nginx`) that
   checks the signature (`secure_link`) and limits downloads: 2 at a time per
-  address, 12 in all, 3 MB/s each, 20 requests a minute per address. A
+  address, 6 in all, 20 requests a minute per address. The first two
+  downloads get 10 MB/s, the next two 5 and the last two 3, so all of them
+  together stay under 36 MB/s (about 300 Mbit/s). A download keeps the
+  speed it started with, which nginx picks from how many responses it is
+  sending (`$connections_writing`); error pages count too, so a burst of
+  bad links can only slow new downloads, never raise the total. A
   client that stops reading loses its slot after 15 seconds. There's no
   AAAA record; before adding one, key nginx's limits on the /64 (the link
   limit already does).

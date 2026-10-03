@@ -20,7 +20,11 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const wait = (ms: number) => new Promise((done) => setTimeout(done, ms));
 
 /* Once, when the element comes into view. */
-function once(el: Element, run: () => void, options: Parameters<typeof inView>[2]) {
+function once(
+  el: Element,
+  run: () => void,
+  options: Parameters<typeof inView>[2],
+) {
   const stop = inView(
     el,
     () => {
@@ -32,7 +36,8 @@ function once(el: Element, run: () => void, options: Parameters<typeof inView>[2
   return stop;
 }
 
-const targetsOf = (el: Element) => (el.hasAttribute("data-reveal-children") ? [...el.children] : [el]);
+const targetsOf = (el: Element) =>
+  el.hasAttribute("data-reveal-children") ? [...el.children] : [el];
 
 /* Rises into place, children one after another. */
 function reveal(el: Element) {
@@ -97,52 +102,120 @@ function typeWords(el: HTMLElement, caret: HTMLElement, words: string[]) {
   };
 }
 
-/* The Ghostty window: a prompt with a blinking caret, then each command
-   typed out and its note printed under it, ending on an empty prompt.
-   Each command's untyped rest stays in the line, invisible, so the window
-   is its full size from the start and nothing below it moves. */
+/* mise's two progress lines while it downloads, as it draws them. */
+function bar(width: number, done: number) {
+  const full = Math.round(width * done);
+  return "█".repeat(full) + "░".repeat(width - full);
+}
+
+/* The Ghostty window, run like a terminal: a prompt with a blinking
+   cursor, each command typed and entered, the cursor waiting on the next
+   line while it runs, its output arriving a line at a time, and the next
+   prompt. The window keeps its height (components/terminal.tsx), so old
+   lines scroll off the top, and the title follows the folder. Ends on an
+   empty prompt, waiting, as a terminal does. */
 function typeTerminal(term: HTMLElement, alive: () => boolean) {
   const caret = term.querySelector<HTMLElement>("[data-caret]");
   if (!caret) return () => {};
-  const lines = [...term.querySelectorAll<HTMLElement>("[data-line]")].map((line) => {
-    const cmd = line.querySelector<HTMLElement>("[data-cmd]")!;
-    const full = cmd.textContent ?? "";
-    const typed = document.createTextNode("");
-    const rest = document.createElement("span");
-    rest.className = "invisible";
-    rest.textContent = full;
-    cmd.replaceChildren(typed, rest);
-    return { line, full, typed, rest, note: line.querySelector<HTMLElement>("[data-note]") };
-  });
-  const at = (l: (typeof lines)[number]) => {
-    l.line.style.visibility = "visible";
-    l.rest.before(caret);
+  const title = term.parentElement?.querySelector<HTMLElement>("[data-title]");
+  const show = (el: Element) => el.setAttribute("data-shown", "");
+  const steps = [...term.querySelectorAll<HTMLElement>("[data-step]")].map(
+    (step) => {
+      const cmd = step.querySelector<HTMLElement>("[data-cmd]")!;
+      /* Kept aside, as this empties the line and may run again (React runs
+       effects twice in development). */
+      const full = (cmd.dataset.text ??= cmd.textContent ?? "");
+      const typed = document.createTextNode("");
+      cmd.replaceChildren(typed);
+      return {
+        step,
+        cmd,
+        full,
+        typed,
+        line: step.querySelector<HTMLElement>("[data-line]")!,
+        outs: [...step.querySelectorAll<HTMLElement>("[data-out]")],
+        wait: Number(step.dataset.wait ?? 0),
+        pace: Number(step.dataset.pace ?? 40),
+        progress: step.dataset.download,
+      };
+    },
+  );
+  /* While a command runs, the cursor sits at the start of the line below. */
+  const running = document.createElement("div");
+  running.setAttribute("data-shown", "");
+  const prompt = (s: (typeof steps)[number]) => {
+    show(s.line);
+    s.cmd.append(caret);
+    if (title) title.textContent = s.step.dataset.cwd ?? "~";
   };
-  at(lines[0]);
+  if (title) title.textContent = "~";
+  prompt(steps[0]);
+
+  /* If anything goes wrong partway, the finished session rather than a
+     half-empty window. */
+  const finish = () => {
+    for (const s of steps) {
+      show(s.line);
+      s.typed.data = s.full;
+      s.outs.forEach(show);
+    }
+    running.remove();
+    term.querySelectorAll("[data-drawn]").forEach((el) => el.remove());
+    delete caret.dataset.busy;
+    prompt(steps[steps.length - 1]);
+  };
+
+  const run = async () => {
+    for (const [i, s] of steps.entries()) {
+      prompt(s);
+      if (!s.full) break;
+      await wait(i === 0 ? 700 : 450);
+      caret.dataset.busy = "";
+      for (let n = 1; n <= s.full.length; n++) {
+        if (!alive()) return;
+        s.typed.data = s.full.slice(0, n);
+        await wait(30 + Math.random() * 55);
+      }
+      delete caret.dataset.busy;
+      await wait(320);
+
+      /* Enter. */
+      s.line.after(running);
+      running.append(caret);
+      if (s.progress) {
+        const top = document.createElement("div");
+        const item = document.createElement("div");
+        top.dataset.drawn = item.dataset.drawn = "";
+        running.before(top, item);
+        const start = performance.now();
+        for (let t = 0; t < 1; t = (performance.now() - start) / s.wait) {
+          if (!alive()) return;
+          top.textContent = `mise by @jdx  ${bar(24, t)}  0/1`;
+          item.textContent = ` ${s.progress} ${t < 0.8 ? "downloading" : "extracting "}  ${bar(10, t)}`;
+          await wait(90);
+        }
+        top.remove();
+        item.remove();
+      } else {
+        await wait(s.wait);
+      }
+      for (const out of s.outs) {
+        if (!alive()) return;
+        show(out);
+        out.after(running);
+        await wait(s.pace);
+      }
+      running.remove();
+    }
+  };
 
   return once(
     term,
-    async () => {
-      for (const [i, l] of lines.entries()) {
-        at(l);
-        if (!l.full) break;
-        await wait(i === 0 ? 600 : 300);
-        caret.dataset.busy = "";
-        for (let n = 1; n <= l.full.length; n++) {
-          if (!alive()) return;
-          l.typed.data = l.full.slice(0, n);
-          l.rest.textContent = l.full.slice(n);
-          await wait(26 + Math.random() * 50);
-        }
-        delete caret.dataset.busy;
-        await wait(380);
-        if (l.note) {
-          l.note.style.visibility = "visible";
-          animate(l.note, { opacity: [0, 1], transform: ["translateX(-6px)", "none"] }, { duration: 0.3, ease });
-          await wait(240);
-        }
-      }
-    },
+    () =>
+      void run().catch((error) => {
+        console.error(error);
+        finish();
+      }),
     { amount: 0.5 },
   );
 }
@@ -170,12 +243,22 @@ export function Motion() {
 }
 
 function setUp(moving: boolean, alive: () => boolean, stops: VoidFunction[]) {
-  const all = <T extends Element = HTMLElement>(selector: string) => [...document.querySelectorAll<T & Element>(selector)];
+  const all = <T extends Element = HTMLElement>(selector: string) => [
+    ...document.querySelectorAll<T & Element>(selector),
+  ];
 
   /* How far down the page you are, as a line under the header. Tied to
      scrolling, so it stays with reduced motion too. */
   for (const bar of all("[data-progress]")) {
-    stops.push(scroll(animate(bar, { transform: ["scaleX(0)", "scaleX(1)"] }, { ease: "linear" })));
+    stops.push(
+      scroll(
+        animate(
+          bar,
+          { transform: ["scaleX(0)", "scaleX(1)"] },
+          { ease: "linear" },
+        ),
+      ),
+    );
   }
 
   if (moving) {
@@ -183,10 +266,17 @@ function setUp(moving: boolean, alive: () => boolean, stops: VoidFunction[]) {
     for (const el of all("[data-parallax]")) {
       const speed = Number(el.dataset.parallax);
       stops.push(
-        scroll(animate(el, { transform: ["none", `translateY(${Math.round(speed * 600)}px)`] }, { ease: "linear" }), {
-          target: el.closest("section") ?? el,
-          offset: ["start end", "end start"],
-        }),
+        scroll(
+          animate(
+            el,
+            { transform: ["none", `translateY(${Math.round(speed * 600)}px)`] },
+            { ease: "linear" },
+          ),
+          {
+            target: el.closest("section") ?? el,
+            offset: ["start end", "end start"],
+          },
+        ),
       );
     }
 
@@ -210,10 +300,18 @@ function setUp(moving: boolean, alive: () => boolean, stops: VoidFunction[]) {
         scroll(
           animate(
             el,
-            { transform: ["perspective(1400px) rotateX(9deg) scale(0.96)", "perspective(1400px) rotateX(0deg) scale(1)"] },
+            {
+              transform: [
+                "perspective(1400px) rotateX(9deg) scale(0.96)",
+                "perspective(1400px) rotateX(0deg) scale(1)",
+              ],
+            },
             { ease: "linear" },
           ),
-          { target: el.closest("section") ?? el, offset: ["start start", "400px start"] },
+          {
+            target: el.closest("section") ?? el,
+            offset: ["start start", "400px start"],
+          },
         ),
       );
     }
@@ -222,8 +320,16 @@ function setUp(moving: boolean, alive: () => boolean, stops: VoidFunction[]) {
     for (const el of all("[data-glow]")) {
       const glow = animate(
         el,
-        { transform: ["scale(1) rotate(0deg)", "scale(1.12) rotate(10deg)"], opacity: [0.3, 0.45] },
-        { duration: 9, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" },
+        {
+          transform: ["scale(1) rotate(0deg)", "scale(1.12) rotate(10deg)"],
+          opacity: [0.3, 0.45],
+        },
+        {
+          duration: 9,
+          repeat: Infinity,
+          repeatType: "reverse",
+          ease: "easeInOut",
+        },
       );
       stops.push(
         inView(el, () => {
@@ -254,18 +360,32 @@ function setUp(moving: boolean, alive: () => boolean, stops: VoidFunction[]) {
     const reading = "65%";
     for (const el of all("[data-draw]")) {
       stops.push(
-        scroll(animate(el, { transform: ["scaleY(0)", "scaleY(1)"] }, { ease: "linear" }), {
-          target: el.parentElement ?? el,
-          offset: [`start ${reading}`, `end ${reading}`],
-        }),
+        scroll(
+          animate(
+            el,
+            { transform: ["scaleY(0)", "scaleY(1)"] },
+            { ease: "linear" },
+          ),
+          {
+            target: el.parentElement ?? el,
+            offset: [`start ${reading}`, `end ${reading}`],
+          },
+        ),
       );
     }
     for (const el of all("[data-dot]")) {
       stops.push(
-        scroll(animate(el, { transform: ["scale(0)", "scale(1)"] }, { ease: "linear" }), {
-          target: el.parentElement ?? el,
-          offset: [`start 72%`, `center ${reading}`],
-        }),
+        scroll(
+          animate(
+            el,
+            { transform: ["scale(0)", "scale(1)"] },
+            { ease: "linear" },
+          ),
+          {
+            target: el.parentElement ?? el,
+            offset: [`start 72%`, `center ${reading}`],
+          },
+        ),
       );
     }
 
@@ -276,10 +396,17 @@ function setUp(moving: boolean, alive: () => boolean, stops: VoidFunction[]) {
           () => {
             animate(
               [...box.querySelectorAll("[data-bar]")],
-              { clipPath: ["inset(0 100% 0 0 round 999px)", "inset(0 0% 0 0 round 999px)"] },
+              {
+                clipPath: [
+                  "inset(0 100% 0 0 round 999px)",
+                  "inset(0 0% 0 0 round 999px)",
+                ],
+              },
               { duration: 1, ease, delay: stagger(0.15) },
             );
-            box.querySelectorAll<HTMLElement>("[data-count]").forEach((el, i) => countUp(el, i * 0.15, alive));
+            box
+              .querySelectorAll<HTMLElement>("[data-count]")
+              .forEach((el, i) => countUp(el, i * 0.15, alive));
           },
           { margin: "0px 0px -15% 0px" },
         ),
@@ -295,19 +422,28 @@ function setUp(moving: boolean, alive: () => boolean, stops: VoidFunction[]) {
             void animate(
               [...list.querySelectorAll("[data-strike]")],
               { transform: ["scaleX(0)", "scaleX(1)"] },
-              { duration: 0.45, ease: "easeOut", delay: stagger(0.15, { startDelay: 0.4 }) },
+              {
+                duration: 0.45,
+                ease: "easeOut",
+                delay: stagger(0.15, { startDelay: 0.4 }),
+              },
             ),
           { amount: 0.6 },
         ),
       );
     }
 
-    for (const term of all("[data-terminal]")) stops.push(typeTerminal(term, alive));
+    for (const term of all("[data-terminal]"))
+      stops.push(typeTerminal(term, alive));
 
     for (const el of all("[data-words]")) {
       const caret = el.parentElement?.querySelector<HTMLElement>(".caret");
       if (!caret) continue;
-      const typer = typeWords(el, caret, JSON.parse(el.dataset.words ?? "[]") as string[]);
+      const typer = typeWords(
+        el,
+        caret,
+        JSON.parse(el.dataset.words ?? "[]") as string[],
+      );
       stops.push(
         inView(el, () => {
           typer.start();

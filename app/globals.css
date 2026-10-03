@@ -97,6 +97,14 @@
   background: var(--color-violet-hi);
   animation: caret-blink 1.06s step-end infinite;
 }
+/* Ghostty's cursor: a block, one cell wide. */
+.caret-block::after {
+  left: 0;
+  width: 1ch;
+  height: 1.25em;
+  border-radius: 0;
+  background: #c5c8c6;
+}
 .caret[data-busy]::after {
   animation: none;
 }
@@ -251,7 +259,8 @@ html.motion [data-strike] {
 html.motion [data-bar] {
   clip-path: inset(0 100% 0 0 round 999px);
 }
-html.motion [data-terminal] [data-line],
-html.motion [data-terminal] [data-note] {
-  visibility: hidden;
+/* The terminal's lines arrive as it runs (components/motion.tsx). Taken out
+   of the flow, not just hidden, so the window scrolls as a terminal does. */
+html.motion [data-terminal] :is([data-line], [data-out]):not([data-shown]) {
+  display: none;
 }
