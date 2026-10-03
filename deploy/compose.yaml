@@ -1,8 +1,9 @@
 # atlasos.eterneon.net, in /srv/atlasos-site on eterneon-vps.
 #
-# Two services on the matrix stack's network, where Caddy reaches them by
-# name. Their names are unique on that network on purpose: the Eterneon site
-# is already "site" there.
+# Two services on a network of their own, atlasos_inside (172.29.0.0/24),
+# that the matrix stack's Caddy also joins (see /srv/matrix/compose.yaml) and
+# nothing else does. Both trust X-Real-IP, which only Caddy may set, so no
+# other container may reach them. deploy.sh creates the network.
 #
 # .env (mode 600, made by deploy.sh on the first deploy) holds
 # DOWNLOAD_SECRET, shared by both: the site signs download links with it and
@@ -17,6 +18,10 @@ services:
     volumes:
       # The ISO folder CI uploads to; the site only reads <image>.json.
       - /srv/downloads/atlasos:/data:ro
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
     mem_limit: 512m
     healthcheck:
       test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3060/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
@@ -27,20 +32,21 @@ services:
     logging: &logging
       driver: json-file
       options: { max-size: 10m, max-file: "3" }
-    networks: [edge]
+    networks: [inside]
 
   # The ISOs, only by signed link, with per-address, total and speed limits.
-  # Most bandwidth it can use: MAX_DOWNLOADS x DOWNLOAD_RATE (8 x 4 MB/s,
-  # about 270 Mbit/s), leaving the rest of the uplink to everything else.
+  # Most bandwidth it can use: MAX_DOWNLOADS x DOWNLOAD_RATE (12 x 3 MB/s,
+  # about 300 Mbit/s), leaving the rest of the uplink to everything else.
   atlasos-dl:
     image: nginx:1.30-alpine
     restart: unless-stopped
     env_file: .env
     environment:
       NGINX_ENTRYPOINT_QUIET_LOGS: "1"
-      MAX_DOWNLOADS: "8"
+      MAX_DOWNLOADS: "12"
       PER_IP_DOWNLOADS: "2"
-      DOWNLOAD_RATE: 4m
+      DOWNLOAD_RATE: 3m
+      INSIDE_SUBNET: 172.29.0.0/24
     volumes:
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - ./nginx/errors:/usr/share/nginx/errors:ro
@@ -52,6 +58,7 @@ services:
       - /etc/nginx/conf.d
     cap_drop: [ALL]
     cap_add: [CHOWN, SETUID, SETGID]
+    security_opt: [no-new-privileges:true]
     mem_limit: 128m
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/healthz"]
@@ -59,9 +66,9 @@ services:
       timeout: 5s
       retries: 3
     logging: *logging
-    networks: [edge]
+    networks: [inside]
 
 networks:
-  edge:
+  inside:
     external: true
-    name: matrix_inside
+    name: atlasos_inside

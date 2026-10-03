@@ -47,10 +47,20 @@ export async function currentRelease(image: ImageId): Promise<Release | null> {
   return { image, version, file, size, sha256, date };
 }
 
-export async function currentReleases() {
-  const list = await Promise.all(imageIds.map((id) => currentRelease(id)));
-  return Object.fromEntries(imageIds.map((id, i) => [id, list[i]])) as Record<
-    ImageId,
-    Release | null
-  >;
+type Releases = Record<ImageId, Release | null>;
+
+/* For the page: read at most every 30 seconds. A new ISO arrives once a
+   week, and CI's upload puts <image>.json in place last. */
+let cached: { at: number; releases: Promise<Releases> } | null = null;
+
+export function currentReleases(now = Date.now()): Promise<Releases> {
+  if (!cached || now - cached.at > 30_000) {
+    cached = {
+      at: now,
+      releases: Promise.all(imageIds.map((id) => currentRelease(id))).then(
+        (list) => Object.fromEntries(imageIds.map((id, i) => [id, list[i]])) as Releases,
+      ),
+    };
+  }
+  return cached.releases;
 }

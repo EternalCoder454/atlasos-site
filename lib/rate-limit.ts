@@ -1,4 +1,5 @@
 import "server-only";
+import { isIPv6 } from "node:net";
 
 /* How many download links one address gets per hour. A person needs one
    or two; a retry after a failed download is another. Anything past this
@@ -14,6 +15,22 @@ const WINDOW_MS = 60 * 60 * 1000;
 const MAX_KEYS = 50_000;
 
 const windows = new Map<string, { count: number; resetAt: number }>();
+
+/* Who a limit applies to. An IPv6 home or server gets a whole /64, so one
+   address per key would give each of them 2^64 keys; the /64 is the
+   subscriber. The download server keys its limits the same way. */
+export function limitKey(ip: string): string {
+  if (!isIPv6(ip)) return ip;
+  const full = ip.includes("::")
+    ? (() => {
+        const [head, tail] = ip.split("::");
+        const h = head ? head.split(":") : [];
+        const t = tail ? tail.split(":") : [];
+        return [...h, ...Array(8 - h.length - t.length).fill("0"), ...t];
+      })()
+    : ip.split(":");
+  return `${full.slice(0, 4).map((g) => parseInt(g || "0", 16).toString(16)).join(":")}::/64`;
+}
 
 export function takeToken(key: string, now = Date.now()): { ok: boolean; retryAfter: number } {
   if (windows.size > MAX_KEYS) windows.clear();

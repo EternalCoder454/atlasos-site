@@ -1,7 +1,7 @@
 import { isIP } from "node:net";
 import type { NextRequest } from "next/server";
 import { isImageId } from "@/lib/images";
-import { takeToken } from "@/lib/rate-limit";
+import { limitKey, takeToken } from "@/lib/rate-limit";
 import { currentRelease } from "@/lib/releases";
 import { signedPath } from "@/lib/signed-link";
 
@@ -25,6 +25,11 @@ function page(status: number, title: string, body: string, extra: Record<string,
   });
 }
 
+/* HEAD (link checkers, unfurlers) gets nothing and costs nothing. */
+export function HEAD() {
+  return new Response(null, { status: 405, headers: { Allow: "GET", ...noStore } });
+}
+
 export async function GET(request: NextRequest, ctx: RouteContext<"/download/[image]">) {
   const { image } = await ctx.params;
   if (!isImageId(image)) return page(404, "Not found", "There's no image by that name.");
@@ -38,6 +43,25 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/download/[im
     (process.env.NODE_ENV === "development" ? "127.0.0.1" : "");
   if (!isIP(ip)) return page(400, "Can't tell where you are", "Try again from the download page.");
 
+  /* Only a person going to the link gets one. Fetch metadata, which every
+     current browser sends: another site putting this URL in an <iframe>
+     or <img> would make each of its visitors' browsers start a 4 GB
+     download, and a page following a cross-site link without a click is
+     a script, not a person. Tools that send none of these (curl, wget)
+     still pass, and still meet the limits below. */
+  const dest = request.headers.get("sec-fetch-dest");
+  const from = request.headers.get("sec-fetch-site");
+  if (dest && dest !== "document") {
+    return page(403, "Not like that", "Download links are for opening, not embedding.");
+  }
+  if (from && from !== "same-origin" && from !== "none" && request.headers.get("sec-fetch-user") !== "?1") {
+    return new Response(null, { status: 303, headers: { Location: "/#download", ...noStore } });
+  }
+  /* A prefetch is a browser guessing, not someone downloading. */
+  if (/prefetch/i.test(`${request.headers.get("sec-purpose") ?? ""} ${request.headers.get("purpose") ?? ""}`)) {
+    return new Response(null, { status: 204, headers: noStore });
+  }
+
   const release = await currentRelease(image);
   if (!release) {
     return page(
@@ -48,7 +72,7 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/download/[im
     );
   }
 
-  const token = takeToken(ip);
+  const token = takeToken(limitKey(ip));
   if (!token.ok) {
     const minutes = Math.max(1, Math.ceil(token.retryAfter / 60));
     return page(

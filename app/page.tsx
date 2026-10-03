@@ -4,11 +4,13 @@ import { Screenshot } from "@/components/screenshot";
 import { currentReleases } from "@/lib/releases";
 import { links, site } from "@/lib/site";
 
-/* The page is static, rebuilt at most every five minutes so the download
-   section picks up a new weekly ISO without a deploy. */
-export const revalidate = 300;
+/* Rendered per request, so the download section shows the ISO that's up
+   now. Prerendering would bake in whatever the image build saw, and the
+   build has no ISOs. The two small JSON reads behind it are cached
+   (lib/releases.ts), so this costs a few milliseconds. */
+export const dynamic = "force-dynamic";
 
-const link = "text-violet-hi underline-offset-4 hover:underline";
+const link = "text-violet-hi underline decoration-violet-hi/40 underline-offset-4 hover:decoration-violet-hi";
 
 function Header() {
   return (

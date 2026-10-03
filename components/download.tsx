@@ -25,7 +25,7 @@ function Option({ id, release }: { id: ImageId; release: Release | null }) {
           <p className="mt-2 text-sm text-text-3">
             With Secure Boot on, the installer gives you a one-time password, and you confirm the
             AtlasOS key with it on the first restart. Once.{" "}
-            <a href={links.nvidia} className="text-violet-hi underline-offset-4 hover:underline">
+            <a href={links.nvidia} className="text-violet-hi underline decoration-violet-hi/40 underline-offset-4 hover:decoration-violet-hi">
               More about this
             </a>
           </p>
@@ -44,7 +44,7 @@ function Option({ id, release }: { id: ImageId; release: Release | null }) {
                 <path d="M10 2a1 1 0 0 1 1 1v8.6l2.8-2.8a1 1 0 1 1 1.4 1.4l-4.5 4.5a1 1 0 0 1-1.4 0L4.8 10.2a1 1 0 0 1 1.4-1.4L9 11.6V3a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Z" />
               </svg>
               Download ISO
-              <span className="font-normal text-white/80">{gigabytes(release.size)}</span>
+              <span className="font-normal text-white">{gigabytes(release.size)}</span>
             </a>
             <p className="mt-2.5 text-sm text-text-3">
               Version {release.version}, {versionDate(release.version)}
@@ -57,7 +57,7 @@ function Option({ id, release }: { id: ImageId; release: Release | null }) {
               <p className="mt-1.5 break-all font-mono text-xs leading-relaxed text-text-2">{release.sha256}</p>
               <a
                 href={`/dl/${release.file}.sha256`}
-                className="mt-2 inline-block text-xs text-violet-hi underline-offset-4 hover:underline"
+                className="mt-2 inline-block text-xs text-violet-hi underline decoration-violet-hi/40 underline-offset-4 hover:decoration-violet-hi"
               >
                 {release.file}.sha256
               </a>
@@ -66,7 +66,7 @@ function Option({ id, release }: { id: ImageId; release: Release | null }) {
         ) : (
           <div className="rounded-xl border border-dashed border-line-strong px-5 py-4 text-sm text-text-2">
             The first ISO is on its way. It&apos;s built with each weekly stable release; until then, see{" "}
-            <a href="#switch" className="text-violet-hi underline-offset-4 hover:underline">
+            <a href="#switch" className="text-violet-hi underline decoration-violet-hi/40 underline-offset-4 hover:decoration-violet-hi">
               switching from Fedora
             </a>
             .
@@ -113,14 +113,14 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
                 <>
                   Check it. In the folder you saved it to, with the <code className="text-sm">.sha256</code> file beside it:
                   <span className="mt-2 flex items-center gap-3 rounded-lg border border-line bg-ink-0 px-3 py-2">
-                    <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap text-sm text-text">
+                    <code className="min-w-0 flex-1 break-all text-sm sm:overflow-x-auto sm:whitespace-nowrap sm:break-normal text-text">
                       sha256sum -c {example}.sha256
                     </code>
                   </span>
                 </>,
                 <>
                   Write it to a USB stick of 8 GB or more, with{" "}
-                  <a href={links.mediaWriter} className="text-violet-hi underline-offset-4 hover:underline">
+                  <a href={links.mediaWriter} className="text-violet-hi underline decoration-violet-hi/40 underline-offset-4 hover:decoration-violet-hi">
                     Fedora Media Writer
                   </a>{" "}
                   or any tool that writes ISOs as they are.
@@ -168,7 +168,7 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
             driver, use <code className="text-sm">atlasos-nvidia</code> instead.
           </p>
           <div className="mt-5 flex items-center gap-3 rounded-lg border border-line bg-ink-1 px-4 py-3">
-            <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap text-sm text-text">
+            <code className="min-w-0 flex-1 break-all text-sm sm:overflow-x-auto sm:whitespace-nowrap sm:break-normal text-text">
               <span className="select-none text-text-3">$ </span>sudo bootc switch {images.atlasos.ref}
             </code>
             <CopyButton text={`sudo bootc switch ${images.atlasos.ref}`} label="Copy the bootc switch command" />

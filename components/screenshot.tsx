@@ -1,4 +1,4 @@
-/* A screenshot from public/screens, at 640, 960 and 1280 wide. All of them
+/* A screenshot from public/screens, at 480, 640, 960 and 1280 wide. All of them
    are 1280x800 originals, so the box is fixed at 16:10 before the file
    arrives and nothing on the page moves when it does. */
 export function Screenshot({
@@ -18,7 +18,7 @@ export function Screenshot({
     // eslint-disable-next-line @next/next/no-img-element -- pre-sized variants, no image server
     <img
       src={`/screens/${name}-1280.webp`}
-      srcSet={[640, 960, 1280].map((w) => `/screens/${name}-${w}.webp ${w}w`).join(", ")}
+      srcSet={[480, 640, 960, 1280].map((w) => `/screens/${name}-${w}.webp ${w}w`).join(", ")}
       sizes={sizes}
       width={1280}
       height={800}

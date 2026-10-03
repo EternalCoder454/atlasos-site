@@ -19,11 +19,19 @@ on the VPS, with an `<image>.json` naming the current version.
 
 - The page's buttons go to `/download/<image>` (`app/download/[image]/route.ts`).
   It gives each address 8 links an hour and answers with a redirect to a
-  signed link: `/dl/<file>.iso?md5=…&expires=…`, valid for 6 hours and only
+  signed link: `/dl/<file>.iso?md5=…&expires=…`, valid for 3 hours and only
   from the address that asked (`lib/signed-link.ts`).
 - Caddy sends `/dl/*.iso` to `atlasos-dl`, an nginx (`deploy/nginx`) that
   checks the signature (`secure_link`) and limits downloads: 2 at a time per
-  address, 8 in all, 4 MB/s each, 20 requests a minute per address.
+  address, 12 in all, 3 MB/s each, 20 requests a minute per address. For
+  IPv6, an "address" is the /64. A client that stops reading loses its slot
+  after 15 seconds.
+- The route refuses to be embedded (`Sec-Fetch-Dest` other than `document`),
+  sends cross-site requests that weren't a click back to the page, and
+  ignores prefetches and HEAD, so none of those use up anyone's links.
+- The site and the download server are on their own Docker network,
+  `atlasos_inside` (172.29.0.0/24), shared only with Caddy, because both
+  trust the `X-Real-IP` header Caddy sets.
   Busy, expired and missing get their own small pages (`deploy/nginx/errors`).
 - `<image>.json` and the `.sha256` files stay public under `/dl/`, straight
   from Caddy: CI checks the upload through them.

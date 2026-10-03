@@ -8,9 +8,11 @@ import { createHash } from "node:crypto";
    The secret comes last, so the hash can't be extended to another path,
    and without it no one can make a link at all.
 
-   Long enough to finish a slow download and resume it; short enough that
-   a link pasted on a forum is dead by the time anyone else tries it. */
-export const LINK_LIFETIME_SECONDS = 6 * 60 * 60;
+   A download that has started runs to the end whatever the expiry; the
+   expiry only stops new requests. Long enough to resume a slow download,
+   short enough that a link pasted on a forum is dead by the time anyone
+   else tries it. */
+export const LINK_LIFETIME_SECONDS = 3 * 60 * 60;
 
 export function signedPath(file: string, ip: string, now = Date.now()): string {
   const secret = process.env.DOWNLOAD_SECRET;

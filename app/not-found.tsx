@@ -7,7 +7,7 @@ export default function NotFound() {
         <h1 className="text-3xl font-semibold tracking-tight">Not found</h1>
         <p className="mt-3 text-text-2">There&apos;s nothing at this address.</p>
         <p className="mt-6">
-          <Link href="/" className="text-violet-hi underline-offset-4 hover:underline">
+          <Link href="/" className="text-violet-hi underline decoration-violet-hi/40 underline-offset-4 hover:decoration-violet-hi">
             Back to AtlasOS
           </Link>
         </p>

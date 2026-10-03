@@ -30,8 +30,8 @@ ENV PORT=3060
 ENV HOSTNAME=0.0.0.0
 ENV DOWNLOADS_DIR=/data
 
-# Not root. The only thing it writes is Next's own page cache, when the
-# download section is rebuilt every few minutes.
+# Not root, and it writes nothing: the page is rendered per request from
+# the read-only /data.
 RUN groupadd --system --gid 1003 site \
  && useradd --system --uid 1003 --gid site site
 
