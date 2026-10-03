@@ -61,9 +61,19 @@ const structuredData = {
   codeRepository: site.repo,
 };
 
+/* Runs before the first paint: with motion allowed, html.motion puts the
+   below-the-fold parts in their starting places (globals.css), so they
+   don't show and then jump. If components/motion.tsx hasn't started four
+   seconds later (blocked, or a very slow connection), the class comes off
+   and the page shows as it is. */
+const motionGate = `(function(){var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: no-preference)").matches)return;d.classList.add("motion");setTimeout(function(){if(!d.classList.contains("motion-on"))d.classList.remove("motion")},4000)})()`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${plex.variable} ${jetbrains.variable}`}>
+    <html lang="en" className={`${plex.variable} ${jetbrains.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: motionGate }} />
+      </head>
       <body>
         <script
           type="application/ld+json"

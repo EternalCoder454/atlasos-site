@@ -38,9 +38,9 @@ function Option({ id, release }: { id: ImageId; release: Release | null }) {
             <a
               href={`/download/${id}`}
               rel="nofollow"
-              className="flex items-center justify-center gap-2 rounded-xl bg-violet-deep px-5 py-3 font-semibold text-white transition-colors hover:bg-violet"
+              className="group flex items-center justify-center gap-2 rounded-xl bg-violet-deep px-5 py-3 font-semibold text-white transition-colors hover:bg-violet"
             >
-              <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4 fill-current">
+              <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4 fill-current transition-[translate] duration-300 group-hover:translate-y-0.5">
                 <path d="M10 2a1 1 0 0 1 1 1v8.6l2.8-2.8a1 1 0 1 1 1.4 1.4l-4.5 4.5a1 1 0 0 1-1.4 0L4.8 10.2a1 1 0 0 1 1.4-1.4L9 11.6V3a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Z" />
               </svg>
               Download ISO
@@ -82,7 +82,7 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
   return (
     <section id="download" aria-labelledby="download-title" className="border-t border-line bg-ink-1 py-20 sm:py-28">
       <div className="wrap">
-        <div className="max-w-2xl">
+        <div data-reveal-children className="max-w-2xl">
           <h2 id="download-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Get AtlasOS
           </h2>
@@ -92,19 +92,19 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
           </p>
         </div>
 
-        <div className="mt-10 divide-y divide-line rounded-[var(--radius-card)] border border-line bg-ink-0 p-6 sm:p-8">
+        <div data-reveal className="mt-10 divide-y divide-line rounded-[var(--radius-card)] border border-line bg-ink-0 p-6 sm:p-8">
           {imageIds.map((id) => (
             <Option key={id} id={id} release={releases[id]} />
           ))}
         </div>
 
-        <p className="mt-4 text-sm text-text-3">
+        <p data-reveal className="mt-4 text-sm text-text-3">
           Downloads are shared out fairly: a few links per visitor an hour, two downloads at a time
           each, and a speed cap per download so the server stays quick for everyone. If every slot
           is busy, try again in a few minutes.
         </p>
 
-        <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-2">
+        <div data-reveal-children className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-2">
           <div>
             <h3 className="text-xl font-semibold">Install it</h3>
             <ol className="mt-5 space-y-5">
@@ -113,7 +113,7 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
                 <>
                   Check it. In the folder you saved it to, with the <code className="text-sm">.sha256</code> file beside it:
                   <span className="mt-2 flex items-center gap-3 rounded-lg border border-line bg-ink-0 px-3 py-2">
-                    <code className="min-w-0 flex-1 break-all text-sm sm:overflow-x-auto sm:whitespace-nowrap sm:break-normal text-text">
+                    <code className="min-w-0 flex-1 text-sm text-text [overflow-wrap:anywhere]">
                       sha256sum -c {example}.sha256
                     </code>
                   </span>
@@ -160,7 +160,7 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
           </div>
         </div>
 
-        <div id="switch" className="mt-16 rounded-[var(--radius-card)] border border-line bg-ink-0 p-6 sm:p-8">
+        <div id="switch" data-reveal className="mt-16 rounded-[var(--radius-card)] border border-line bg-ink-0 p-6 sm:p-8">
           <h3 className="text-xl font-semibold">Already on Fedora Atomic?</h3>
           <p className="mt-2 max-w-2xl text-text-2">
             Switch a Fedora Kinoite 44 install (or another Fedora Atomic desktop) over in place and
@@ -168,7 +168,7 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
             driver, use <code className="text-sm">atlasos-nvidia</code> instead.
           </p>
           <div className="mt-5 flex items-center gap-3 rounded-lg border border-line bg-ink-1 px-4 py-3">
-            <code className="min-w-0 flex-1 break-all text-sm sm:overflow-x-auto sm:whitespace-nowrap sm:break-normal text-text">
+            <code className="min-w-0 flex-1 text-sm text-text [overflow-wrap:anywhere]">
               <span className="select-none text-text-3">$ </span>sudo bootc switch {images.atlasos.ref}
             </code>
             <CopyButton text={`sudo bootc switch ${images.atlasos.ref}`} label="Copy the bootc switch command" />

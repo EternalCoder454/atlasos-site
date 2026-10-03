@@ -8,9 +8,15 @@ README.md for how downloads are protected and how to deploy.
 - Every claim on the page comes from the AtlasOS README
   (`~/Documents/AtlasOS/README.md`). Don't add numbers or features it doesn't state.
 - Adding a dependency needs the user's approval.
-- Reduced motion makes an animation instant; it never skips it. The server
-  renders the `initial` state, so always animate to the shown state.
-- Use `m.*` inside `LazyMotion strict`, never `motion.*`.
+- Animation is vanilla Motion, all in `components/motion.tsx`: `animate` from
+  `motion/mini`, plus `inView`, `scroll` and `stagger` from `motion`. No
+  `motion/react`. The page marks what moves with data attributes.
+- The server renders every element where it ends up. Starting points go in
+  `globals.css` under `html.motion`, which the head script in
+  `app/layout.tsx` sets only when motion is allowed, so reduced motion and
+  no-script visitors see the finished page. Always animate to the rendered
+  state.
+- The hero's entrance is CSS (`.hero-in`), so it never waits for a script.
 - The download limits live in `deploy/compose.yaml` (nginx) and
   `lib/rate-limit.ts` (links per hour); README.md describes them. Change
   all three together.

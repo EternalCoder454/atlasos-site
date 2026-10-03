@@ -1,6 +1,8 @@
 import { Download } from "@/components/download";
 import { MemoryBars } from "@/components/memory-bars";
+import { Motion } from "@/components/motion";
 import { Screenshot } from "@/components/screenshot";
+import { Terminal } from "@/components/terminal";
 import { currentReleases } from "@/lib/releases";
 import { links, site } from "@/lib/site";
 
@@ -31,22 +33,43 @@ function Header() {
           </a>
         </nav>
       </div>
+      {/* How far down the page you are (components/motion.tsx). */}
+      <div
+        data-progress
+        aria-hidden="true"
+        className="absolute inset-x-0 -bottom-px h-px origin-left bg-linear-to-r from-violet-deep via-violet-hi to-sakura"
+        style={{ transform: "scaleX(0)" }}
+      />
     </header>
   );
 }
+
+const heroWords = ["build things.", "write code.", "ship software.", "self-host.", "tinker."];
 
 function Hero() {
   return (
     <section id="top" className="relative overflow-hidden pb-20 pt-16 sm:pt-24">
       {/* The wallpaper's two colours, as light behind the screenshot. */}
       <div
+        data-glow
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-[22rem] h-[36rem] w-[64rem] -translate-x-1/2 rounded-full opacity-35 blur-3xl"
         style={{ background: "radial-gradient(closest-side, #6858e2, transparent), radial-gradient(closest-side at 70% 60%, #f7a8d2, transparent)" }}
       />
-      <div className="wrap relative">
+      <div className="wrap hero-in relative">
+        {/* The last words are typed and retyped (components/motion.tsx), on
+            a line of their own so the rest never reflows. Screen readers
+            get the sentence once. */}
         <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-balance sm:text-6xl">
-          The Linux desktop for people who build things.
+          <span className="sr-only">The Linux desktop for people who build things.</span>
+          <span aria-hidden="true">
+            The Linux desktop for people who
+            <span className="block whitespace-nowrap text-violet-hi">
+              {/* Retyped by motion.tsx, so not React's to reconcile. */}
+              <span data-words={JSON.stringify(heroWords)} dangerouslySetInnerHTML={{ __html: heroWords[0] }} />
+              <span className="caret [--caret-width:0.07em]" />
+            </span>
+          </span>
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-2 sm:text-xl">
           AtlasOS is Fedora and KDE Plasma, tuned and trimmed. Your tools are already installed,
@@ -63,7 +86,7 @@ function Hero() {
         <p className="mt-6 font-mono text-xs text-text-3">Fedora 44 · KDE Plasma 6 · Free and open source</p>
 
         <figure className="mt-14 sm:mt-16">
-          <div className="overflow-hidden rounded-[var(--radius-card)] border border-line-strong/60 shadow-[0_30px_80px_-30px_rgba(10,6,40,0.9)]">
+          <div data-tilt className="origin-bottom overflow-hidden rounded-[var(--radius-card)] border border-line-strong/60 shadow-[0_30px_80px_-30px_rgba(10,6,40,0.9)]">
             <Screenshot
               name="desktop"
               priority
@@ -80,20 +103,11 @@ function Hero() {
   );
 }
 
-const session: [string, string][] = [
-  ["gh repo clone you/project && cd project", ""],
-  ["mise use node@22", "Node, Python, Go and friends, per project"],
-  ["docker compose up -d", "Podman underneath, the commands you know"],
-  ["just test", ""],
-  ["toolbox enter", "a mutable Fedora when you need dnf"],
-  ["atlas", "Homebrew, JetBrains Toolbox, the update channel"],
-];
-
 function Tools() {
   return (
     <section id="tools" aria-labelledby="tools-title" className="border-t border-line py-20 sm:py-28">
       <div className="wrap grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
-        <div>
+        <div data-reveal-children>
           <h2 id="tools-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Open a terminal and start.
           </h2>
@@ -118,30 +132,12 @@ function Tools() {
           </dl>
         </div>
 
-        <figure className="lg:sticky lg:top-24">
-          <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-[#1e1d2b]">
-            <div className="flex items-center gap-2 border-b border-white/5 px-4 py-2.5">
-              <span className="size-3 rounded-full bg-white/10" />
-              <span className="size-3 rounded-full bg-white/10" />
-              <span className="size-3 rounded-full bg-white/10" />
-              <span className="ml-3 font-mono text-xs text-text-3">ghostty · ~/project</span>
-            </div>
-            <pre className="overflow-x-auto p-5 text-[13px] leading-7 sm:text-sm">
-              <code>
-                {session.map(([cmd, note]) => (
-                  <span key={cmd} className="block">
-                    <span className="select-none text-sakura">❯ </span>
-                    <span className="text-text">{cmd}</span>
-                    {note && <span className="block pl-4 text-text-3 sm:inline sm:pl-0"><span className="hidden sm:inline">  </span># {note}</span>}
-                  </span>
-                ))}
-                <span className="block">
-                  <span className="select-none text-sakura">❯ </span>
-                  <span className="inline-block h-4 w-2 translate-y-0.5 bg-violet-hi/80" />
-                </span>
-              </code>
-            </pre>
-          </div>
+        <figure data-reveal className="lg:sticky lg:top-24">
+          <Terminal />
+          <p className="sr-only">
+            A terminal session: clone a project, pick a Node version with mise, start containers with
+            docker compose, run the tests, enter a toolbox, and open the atlas menu.
+          </p>
           <figcaption className="mt-3 text-sm text-text-3">All of it there on first boot, nothing to add.</figcaption>
         </figure>
       </div>
@@ -160,7 +156,7 @@ function Updates() {
   return (
     <section id="updates" aria-labelledby="updates-title" className="border-t border-line bg-ink-1 py-20 sm:py-28">
       <div className="wrap">
-        <div className="max-w-2xl">
+        <div data-reveal-children className="max-w-2xl">
           <h2 id="updates-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Updates that wait for you.
           </h2>
@@ -171,14 +167,17 @@ function Updates() {
         </div>
 
         <div className="mt-12 grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]">
-          <div className="overflow-hidden rounded-[var(--radius-card)] border border-line">
+          <div data-reveal className="overflow-hidden rounded-[var(--radius-card)] border border-line">
             <Screenshot
               name="updater-dark"
               sizes="(min-width: 72rem) 600px, (min-width: 64rem) 54vw, calc(100vw - 2rem)"
               alt="Atlas Updater in the dark theme, showing AtlasOS is up to date, with the current, ready and previous versions listed."
             />
           </div>
-          <ol className="relative space-y-8 border-l border-line-strong pl-7">
+          <div className="relative">
+            {/* Drawn over the track as you read down (components/motion.tsx). */}
+            <span data-draw aria-hidden="true" className="absolute -left-px top-0 h-full w-0.5 origin-top bg-violet" />
+            <ol data-reveal-children className="relative space-y-8 border-l border-line-strong pl-7">
             {updateSteps.map(([title, text]) => (
               <li key={title} className="relative">
                 <span aria-hidden="true" className="absolute -left-[33px] top-1.5 size-2.5 rounded-full bg-violet ring-4 ring-ink-1" />
@@ -186,10 +185,11 @@ function Updates() {
                 <p className="mt-1.5 text-text-2">{text}</p>
               </li>
             ))}
-          </ol>
+            </ol>
+          </div>
         </div>
 
-        <p className="mt-12 max-w-3xl text-text-2">
+        <p data-reveal className="mt-12 max-w-3xl text-text-2">
           Two channels: <b className="font-semibold text-text">Stable</b>, weekly, and{" "}
           <b className="font-semibold text-text">Testing</b>, daily, for the brave. Updates install
           only if they carry the AtlasOS signature.
@@ -203,7 +203,7 @@ function Numbers() {
   return (
     <section aria-labelledby="numbers-title" className="border-t border-line py-20 sm:py-28">
       <div className="wrap grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
-        <div>
+        <div data-reveal-children>
           <h2 id="numbers-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Half the memory, before you open anything.
           </h2>
@@ -217,7 +217,7 @@ function Numbers() {
             <a className={link} href={links.optimization}>How it got there, change by change</a>.
           </p>
         </div>
-        <div className="rounded-[var(--radius-card)] border border-line bg-ink-1 p-6 sm:p-8">
+        <div data-reveal className="rounded-[var(--radius-card)] border border-line bg-ink-1 p-6 sm:p-8">
           <p className="mb-6 text-sm font-medium text-text">Memory in use at idle</p>
           <MemoryBars />
           <p className="mt-6 text-xs text-text-3">An 8 GB virtual machine, two minutes after login.</p>
@@ -231,7 +231,7 @@ function Looks() {
   return (
     <section id="looks" aria-labelledby="looks-title" className="border-t border-line py-20 sm:py-28">
       <div className="wrap">
-        <div className="max-w-2xl">
+        <div data-reveal-children className="max-w-2xl">
           <h2 id="looks-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Looks finished on the first boot.
           </h2>
@@ -241,9 +241,9 @@ function Looks() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
+        <div data-reveal-children className="mt-12 grid gap-6 md:grid-cols-2">
           <figure>
-            <div className="overflow-hidden rounded-[var(--radius-card)] border border-line">
+            <div className="overflow-hidden rounded-[var(--radius-card)] border border-line transition-[translate,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(104,88,226,0.6)]">
               <Screenshot
                 name="setup-appearance"
                 sizes="(min-width: 72rem) 540px, (min-width: 48rem) 46vw, calc(100vw - 2rem)"
@@ -253,7 +253,7 @@ function Looks() {
             <figcaption className="mt-3 text-sm text-text-3">First-run setup: Light or Dark, both from the logo&apos;s violets.</figcaption>
           </figure>
           <figure>
-            <div className="overflow-hidden rounded-[var(--radius-card)] border border-line">
+            <div className="overflow-hidden rounded-[var(--radius-card)] border border-line transition-[translate,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(104,88,226,0.6)]">
               <Screenshot
                 name="setup-launcher"
                 sizes="(min-width: 72rem) 540px, (min-width: 48rem) 46vw, calc(100vw - 2rem)"
@@ -264,7 +264,7 @@ function Looks() {
           </figure>
         </div>
 
-        <ul className="mt-12 grid gap-x-12 gap-y-3 text-text-2 sm:grid-cols-2">
+        <ul data-reveal-children className="mt-12 grid gap-x-12 gap-y-3 text-text-2 sm:grid-cols-2">
           {[
             "A menu bar on top, a floating dock below, both see-through and blurred",
             "Rounded windows, soft shadows and acrylic-style menus",
@@ -288,7 +288,7 @@ function Less() {
   return (
     <section aria-labelledby="less-title" className="border-t border-line py-20 sm:py-28">
       <div className="wrap grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
-        <div>
+        <div data-reveal-children>
           <h2 id="less-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Less, on purpose.
           </h2>
@@ -296,12 +296,18 @@ function Less() {
             No pile of apps you&apos;ll never open, and nothing reporting home.
           </p>
         </div>
-        <div className="grid gap-10 sm:grid-cols-2">
+        <div data-reveal-children className="grid gap-10 sm:grid-cols-2">
           <div>
             <h3 className="font-mono text-sm text-text-3">Left out</h3>
-            <ul className="mt-4 space-y-2.5">
+            <ul data-strikes className="mt-4 space-y-2.5">
               {["Akonadi", "The Baloo file indexer", "KDE Connect", "Telemetry", "Apps you would never open"].map((x) => (
-                <li key={x} className="text-text-2 line-through decoration-text-3/60">{x}</li>
+                <li key={x} className="text-text-2">
+                  {/* A drawn line rather than line-through, so it can be crossed off. */}
+                  <span className="relative">
+                    {x}
+                    <span data-strike aria-hidden="true" className="absolute inset-x-0 top-[55%] h-px origin-left bg-text-3/80" />
+                  </span>
+                </li>
               ))}
             </ul>
           </div>
@@ -365,6 +371,7 @@ export default async function Home() {
         <Download releases={releases} />
       </main>
       <Footer />
+      <Motion />
     </>
   );
 }
