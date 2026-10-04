@@ -73,6 +73,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${plex.variable} ${jetbrains.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: motionGate }} />
+        {/* Umami (analytics.eterneon.net): cookieless page views. Caddy
+            serves the script and its endpoint at /_p/ on this host, so the
+            policy's 'self' covers both; data-domains keeps dev and preview
+            hosts out of the numbers. */}
+        <script defer src="/_p/p.js" data-website-id="4f36100d-43ce-4068-83af-5946b53e1e1e" data-domains="atlasos.eterneon.net" />
       </head>
       <body>
         <script

@@ -4,6 +4,11 @@
 # /srv/atlasos-downloads. After editing the real one:
 #   docker exec matrix-caddy-1 caddy reload --config /etc/caddy/Caddyfile
 atlasos.eterneon.net {
+	# Umami's tracker script and endpoint at /_p/, passed to the analytics
+	# stack (/srv/analytics). The snippet is defined at the top of the real
+	# Caddyfile, for every tracked site.
+	import umami
+
 	header {
 		X-Content-Type-Options nosniff
 		Strict-Transport-Security "max-age=63072000"
@@ -29,6 +34,17 @@ atlasos.eterneon.net {
 		}
 		handle {
 			respond "Not found" 404
+		}
+	}
+
+	# Crash reports from Atlas Updater, filed as GitHub issues by the
+	# crash-relay stack (~claude/crash-relay, AtlasOS ci/crash-relay).
+	handle_path /crash/* {
+		request_body {
+			max_size 300KB
+		}
+		reverse_proxy crash-relay:8080 {
+			header_up X-Forwarded-For {remote_host}
 		}
 	}
 
