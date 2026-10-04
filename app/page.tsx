@@ -23,7 +23,9 @@ function Header() {
         <a href="#top" className="flex items-center gap-2.5 font-semibold tracking-tight">
           {/* eslint-disable-next-line @next/next/no-img-element -- a 3 KB SVG */}
           <img src="/brand/atlas-mark.svg" alt="" width={28} height={28} className="size-7" />
-          AtlasOS
+          <span className="whitespace-nowrap">
+            AtlasOS <span className="font-normal text-text-3 max-[359px]:hidden">Linux</span>
+          </span>
         </a>
         <nav aria-label="Main" className="flex items-center gap-1 text-sm sm:gap-2">
           <a href="#tools" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Tools</a>
@@ -86,6 +88,9 @@ function Hero() {
             Or switch from Fedora Atomic <span aria-hidden="true">→</span>
           </a>
         </div>
+        <p className="mt-5 text-sm text-text-3">
+          AtlasOS Linux is its own project, not related to AtlasOS for Windows.
+        </p>
 
         <figure className="relative mt-14 sm:mt-16">
           <Horizon />
@@ -94,11 +99,11 @@ function Hero() {
               name="desktop"
               priority
               sizes="(min-width: 72rem) 1104px, calc(100vw - 2rem)"
-              alt="The AtlasOS desktop: a menu bar along the top, a floating dock at the bottom, and the Dolphin file manager open over a sakura wallpaper."
+              alt="The AtlasOS desktop, cut diagonally into AtlasOS Light on the left and AtlasOS Dark on the right: the menu bar on top, the floating dock at the bottom, and Atlas Notepad and Ghostty open over the sakura wallpaper."
             />
           </div>
           <figcaption className="mt-3 text-sm text-text-3">
-            The menu bar on top, the dock at the bottom, Dolphin in AtlasOS Light.
+            The menu bar on top, the dock at the bottom, in AtlasOS Light and Dark.
           </figcaption>
         </figure>
       </div>
@@ -120,11 +125,11 @@ function Tools() {
           </p>
           <dl className="mt-8 space-y-5">
             {[
-              ["Terminal", <><b className="font-semibold text-text">Ghostty</b> on Ctrl+Alt+T, and &ldquo;Open Ghostty Here&rdquo; in Dolphin.</>],
+              ["Terminal", <><b className="font-semibold text-text">Ghostty</b> on Ctrl+Alt+T, and &ldquo;Open Terminal Here&rdquo; in Dolphin.</>],
               ["Containers", <>Podman with a <code className="text-sm">docker</code> command and compose. Toolbox and Distrobox for mutable environments.</>],
               ["Runtimes", <><a className={link} href="https://mise.jdx.dev">mise</a> for Node, Python, Go and the rest.</>],
-              ["Command line", <>git, gh, just, jq, ripgrep, fd, btop, gdb, strace and perf.</>],
-              ["Editing", <>Kate by default, with file watch limits raised for big projects.</>],
+              ["Command line", <>git, gh, just, jq, ripgrep, fd, gdb, strace and perf, with Atlas Monitor in place of btop.</>],
+              ["Editing", <>Atlas Notepad as the text editor, with file watch limits raised for big projects.</>],
               ["Everything else", <><code className="text-sm">atlas</code>, a menu for Homebrew, Docker tools on Podman and JetBrains Toolbox. <a className={link} href={links.software}>Where software goes</a>.</>],
             ].map(([term, text]) => (
               <div key={term as string} className="grid gap-1 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
@@ -246,8 +251,8 @@ function Looks() {
             Looks finished on the first boot.
           </h2>
           <p className="mt-4 text-lg text-text-2">
-            Plasma&apos;s own Breeze and KWin, set up properly, so nothing extra runs in the
-            background to make it look this way.
+            Plasma and KWin with AtlasOS&apos;s own style for the desktop and the apps, so nothing
+            extra runs in the background to make it look this way.
           </p>
         </div>
 
@@ -257,7 +262,7 @@ function Looks() {
               <Screenshot
                 name="setup-appearance"
                 sizes="(min-width: 72rem) 540px, (min-width: 48rem) 46vw, calc(100vw - 2rem)"
-                alt="The first-run setup's Appearance page, choosing between Light and Dark."
+                alt="The first-run setup's Appearance page in Dark, choosing between Light and Dark, with a preview of each."
               />
             </div>
             <figcaption className="mt-3 text-sm text-text-3">First-run setup: Light or Dark, both from the logo&apos;s violets.</figcaption>
@@ -265,22 +270,23 @@ function Looks() {
           <figure>
             <div className="overflow-hidden rounded-[var(--radius-card)] border border-line transition-[translate,box-shadow] duration-500 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(104,88,226,0.6)]">
               <Screenshot
-                name="setup-launcher"
+                name="launcher"
                 sizes="(min-width: 72rem) 540px, (min-width: 48rem) 46vw, calc(100vw - 2rem)"
-                alt="The first-run setup's App Launcher page in Dark, choosing between Modern and Classic, over the night sakura wallpaper."
+                alt="The app launcher over the dock, cut diagonally into AtlasOS Light and Dark, with the favourite apps up front and one search box."
               />
             </div>
-            <figcaption className="mt-3 text-sm text-text-3">Then your launcher: Modern, over the dock, or Classic, a compact list.</figcaption>
+            <figcaption className="mt-3 text-sm text-text-3">The launcher, centred over the dock. Its search is the one search.</figcaption>
           </figure>
         </div>
 
         <ul data-reveal-children className="mt-12 grid gap-x-12 gap-y-3 text-text-2 sm:grid-cols-2">
           {[
             "A menu bar on top, a floating dock below, both see-through and blurred",
-            "Rounded windows, soft shadows and acrylic-style menus",
+            "Rounded windows, soft shadows, acrylic-style menus, and right-click menus that keep every action",
             "Two themes, AtlasOS Light and Dark, and the wallpaper turns to night with Dark",
-            "Bibata cursors and Dracula icons",
+            "Bibata cursors and Papirus icons, matched to each theme",
             "IBM Plex Sans for the interface, JetBrains Mono for code",
+            "Notifications that slide down at the top centre, under the clock",
             "A matching login and lock screen, and its own boot splash",
           ].map((item) => (
             <li key={item} className="flex gap-3">
@@ -414,7 +420,10 @@ function Footer() {
             <a className={link} href="https://bootc-dev.github.io/bootc/">bootc</a>. It&apos;s young:
             keep backups, as you would anyway.
           </p>
-          <p>Apache-2.0. Not affiliated with Fedora or KDE.</p>
+          <p>
+            Apache-2.0. Not affiliated with Fedora or KDE, and not related to AtlasOS, the Windows
+            modification by Atlas-OS.
+          </p>
         </div>
         <nav aria-label="Project" className="flex flex-wrap gap-x-6 gap-y-2">
           <a className="hover:text-text" href={site.repo}>Source</a>

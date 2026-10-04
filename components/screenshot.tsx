@@ -1,6 +1,7 @@
-/* A screenshot from public/screens, at 480, 640, 960 and 1280 wide. All of them
-   are 1280x800 originals, so the box is fixed at 16:10 before the file
-   arrives and nothing on the page moves when it does.
+/* A screenshot from public/screens, at 480 to 2560 wide. All of them are
+   2560x1600 originals (a 1280x800 desktop at 2x), so the box is fixed at
+   16:10 before the file arrives and nothing on the page moves when it does,
+   and high-density screens get a sharp copy.
 
    It links to the full-size file, so it opens even without a script; with
    one, components/lightbox.tsx opens it over the page instead. */
@@ -19,7 +20,7 @@ export function Screenshot({
 }) {
   return (
     <a
-      href={`/screens/${name}-1280.webp`}
+      href={`/screens/${name}-2560.webp`}
       data-zoom
       className="group relative block cursor-zoom-in focus-visible:outline-offset-[-4px]"
     >
@@ -28,7 +29,7 @@ export function Screenshot({
       {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized variants, no image server */}
       <img
         src={`/screens/${name}-1280.webp`}
-        srcSet={[480, 640, 960, 1280].map((w) => `/screens/${name}-${w}.webp ${w}w`).join(", ")}
+        srcSet={[480, 640, 960, 1280, 1920, 2560].map((w) => `/screens/${name}-${w}.webp ${w}w`).join(", ")}
         sizes={sizes}
         width={1280}
         height={800}

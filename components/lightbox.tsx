@@ -7,8 +7,9 @@
    Clicking the picture magnifies it where you clicked; then the view
    follows the mouse, or the picture follows a dragging finger, and the
    arrow keys look around. Clicking again, or Esc, goes back.
-   The originals are 1280x800, so it magnifies enough to show them at full
-   size even on a phone, and no further than 4x.
+   The originals are a 1280x800 desktop at 2x, so it magnifies enough to
+   show that desktop at its own size even on a phone, sharp on high-density
+   screens, and no further than 4x.
 
    A native modal <dialog>: the browser keeps focus inside, makes the page
    behind it inert, closes it on Esc and returns focus to the link. */
