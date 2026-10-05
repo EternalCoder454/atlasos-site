@@ -294,3 +294,252 @@ html.motion [data-bar] {
 html.motion [data-terminal] :is([data-line], [data-out]):not([data-shown]) {
   display: none;
 }
+
+/* The docs' rendered Markdown. Written here rather than with a typography
+   plugin: it's one page type, and these are the site's own colours. */
+@layer components {
+  .docs-prose {
+    line-height: 1.75;
+    color: var(--color-text-2);
+    overflow-wrap: break-word;
+  }
+  .docs-prose > * + * {
+    margin-top: 1.1rem;
+  }
+  .docs-prose :is(h2, h3, h4, h5, h6) {
+    color: var(--color-text);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    scroll-margin-top: 5rem;
+  }
+  .docs-prose h2 {
+    margin-top: 2.75rem;
+    padding-top: 0.25rem;
+    font-size: 1.5rem;
+  }
+  .docs-prose h3 {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+  }
+  .docs-prose :is(h4, h5, h6) {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+  }
+  .docs-prose > :first-child {
+    margin-top: 0;
+  }
+  .docs-prose .anchor {
+    color: inherit;
+    text-decoration: none;
+  }
+  .docs-prose .anchor:hover::after {
+    content: " #";
+    color: var(--color-text-3);
+  }
+  .docs-prose a:not(.anchor) {
+    color: var(--color-violet-hi);
+    text-decoration: underline;
+    text-decoration-color: var(--color-line-strong);
+    text-underline-offset: 4px;
+  }
+  .docs-prose a:not(.anchor):hover {
+    text-decoration-color: currentColor;
+  }
+  .docs-prose strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .docs-prose :is(ul, ol) {
+    padding-left: 1.4rem;
+  }
+  .docs-prose ul {
+    list-style: disc;
+  }
+  .docs-prose ol {
+    list-style: decimal;
+  }
+  .docs-prose li + li {
+    margin-top: 0.35rem;
+  }
+  .docs-prose li > :is(ul, ol) {
+    margin-top: 0.35rem;
+  }
+  .docs-prose li::marker {
+    color: var(--color-text-3);
+  }
+  .docs-prose .contains-task-list {
+    list-style: none;
+    padding-left: 0.25rem;
+  }
+  .docs-prose .task-list-item input {
+    margin-right: 0.5rem;
+    accent-color: var(--color-violet);
+  }
+  .docs-prose hr {
+    border-color: var(--color-line);
+    margin-block: 2.5rem;
+  }
+  .docs-prose blockquote {
+    border-left: 3px solid var(--color-line-strong);
+    padding-left: 1rem;
+    color: var(--color-text-3);
+  }
+  .docs-prose img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  .docs-prose :not(pre) > code {
+    border: 1px solid var(--color-line);
+    background: var(--color-ink-2);
+    border-radius: 6px;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.875em;
+    color: var(--color-text);
+  }
+
+  /* Code blocks. Shiki colours the tokens; the box is the site's. */
+  .docs-prose .code-block {
+    position: relative;
+  }
+  .docs-prose pre.code {
+    overflow-x: auto;
+    border: 1px solid var(--color-line);
+    background: var(--color-ink-1);
+    border-radius: var(--radius-card);
+    padding: 1rem 1.15rem;
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: #c0caf5;
+    tab-size: 4;
+  }
+  .docs-prose pre.code code {
+    display: block;
+    width: max-content;
+    min-width: 100%;
+  }
+  .copy-code {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-ink-2);
+    border-radius: 7px;
+    padding: 0.2rem 0.6rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: var(--color-text-2);
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+  .code-block:hover .copy-code,
+  .copy-code:focus-visible,
+  .copy-code[data-copied] {
+    opacity: 1;
+  }
+  /* No hover on touch: the button always shows, above the code rather
+     than over its first line. */
+  @media (hover: none) {
+    .copy-code {
+      opacity: 1;
+    }
+    .docs-prose pre.code {
+      padding-top: 2.6rem;
+    }
+  }
+  .copy-code:hover {
+    color: var(--color-text);
+    border-color: var(--color-line-strong);
+  }
+
+  /* Tables scroll on their own rather than widening the page. */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+  }
+  .docs-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .docs-prose :is(th, td) {
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .docs-prose th {
+    background: var(--color-ink-1);
+    color: var(--color-text);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .docs-prose tr:last-child td {
+    border-bottom: 0;
+  }
+
+  /* GitHub's alerts: > [!NOTE] and the rest. */
+  .callout {
+    border: 1px solid var(--color-line);
+    border-left-width: 3px;
+    background: var(--color-ink-1);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    color: var(--color-text-2);
+  }
+  .callout > * + * {
+    margin-top: 0.5rem;
+  }
+  .callout-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+  .callout-note {
+    border-left-color: var(--color-violet);
+  }
+  .callout-note .callout-title {
+    color: var(--color-violet-hi);
+  }
+  .callout-tip {
+    border-left-color: var(--color-ok);
+  }
+  .callout-tip .callout-title {
+    color: var(--color-ok);
+  }
+  .callout-important {
+    border-left-color: var(--color-violet-hi);
+  }
+  .callout-important .callout-title {
+    color: var(--color-violet-hi);
+  }
+  .callout-warning {
+    border-left-color: #f2c66d;
+  }
+  .callout-warning .callout-title {
+    color: #f2c66d;
+  }
+  .callout-caution {
+    border-left-color: var(--color-sakura);
+  }
+  .callout-caution .callout-title {
+    color: var(--color-sakura);
+  }
+
+  /* Footnotes: the heading is for screen readers only. */
+  .docs-prose .footnotes {
+    margin-top: 3rem;
+    border-top: 1px solid var(--color-line);
+    padding-top: 1rem;
+    font-size: 0.875rem;
+  }
+  .docs-prose .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

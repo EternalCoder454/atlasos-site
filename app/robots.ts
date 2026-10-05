@@ -5,7 +5,7 @@ import { siteUrl } from "@/lib/site";
    burn its rate limit and the server's bandwidth. */
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/download/", "/dl/"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/download/", "/dl/", "/docs-raw/"] },
     sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

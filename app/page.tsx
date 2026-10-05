@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Download } from "@/components/download";
 import { MemoryBars } from "@/components/memory-bars";
 import { Lightbox } from "@/components/lightbox";
@@ -31,6 +32,7 @@ function Header() {
           <a href="#tools" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Tools</a>
           <a href="#updates" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Updates</a>
           <a href="#looks" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Looks</a>
+          <Link href="/docs" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text sm:block">Docs</Link>
           <a href={site.repo} className="rounded-md px-3 py-2 text-text-2 hover:text-text">GitHub</a>
           <a href="#download" className="rounded-lg bg-violet-deep px-4 py-2 font-semibold text-white hover:bg-violet">
             Download
@@ -429,6 +431,7 @@ function Footer() {
           <a className="hover:text-text" href={site.repo}>Source</a>
           <a className="hover:text-text" href={site.installerRepo}>Installer</a>
           <a className="hover:text-text" href={links.dev}>For developers</a>
+          <Link className="hover:text-text" href="/docs">Framework docs</Link>
           <a className="hover:text-text" href={links.privacy}>Privacy</a>
         </nav>
       </div>

@@ -1,0 +1,24 @@
+{
+  "version": "1.4.0",
+  "released": false,
+  "commit": "7a114a1000000000000000000000000000000000",
+  "generated": "2026-10-05T03:00:00Z",
+  "libraries": [
+    {
+      "slug": "atlas-ui", "title": "Atlas.Ui", "order": 1,
+      "summary": "The QML module of Atlas controls: buttons, sections, the status hero and the window.",
+      "pages": [
+        {"slug": "primary-button", "title": "PrimaryButton", "summary": "The one accent pill button for a page's main action.", "order": 1, "since": "1.0.0", "section": "Controls", "path": "atlas-ui/primary-button.md", "source": "docs/reference/atlas-ui/primary-button.md"},
+        {"slug": "spring-animation", "title": "AtlasSpringAnimation", "summary": "Standard and expressive springs for movement.", "order": 2, "since": "1.4.0", "section": "Motion", "path": "atlas-ui/spring-animation.md", "source": "docs/reference/atlas-ui/spring-animation.md"},
+        {"slug": "Bad Slug", "title": "x", "summary": "x", "path": "atlas-ui/Bad Slug.md", "source": "x"}
+      ]
+    },
+    {
+      "slug": "atlas-framework-core", "title": "atlas-framework-core", "order": 3,
+      "summary": "App startup, single instance, settings and journal logging for every Atlas app.",
+      "pages": [
+        {"slug": "settings", "title": "Settings", "summary": "Typed settings that save atomically.", "order": 1, "section": "Guides", "path": "atlas-framework-core/settings.md", "source": "docs/reference/atlas-framework-core/settings.md", "deprecated": "Use the new Store API instead."}
+      ]
+    }
+  ]
+}

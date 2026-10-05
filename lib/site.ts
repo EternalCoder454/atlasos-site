@@ -12,6 +12,14 @@ export const site = {
   installerRepo: "https://github.com/EternalCoder454/atlasos-installer",
 };
 
+/* The social card, for every page. */
+export const ogImage = {
+  url: "/og.jpg",
+  width: 1200,
+  height: 630,
+  alt: "The AtlasOS desktop in Light and Dark: a menu bar on top, and Atlas Notepad and Ghostty over the sakura wallpaper",
+};
+
 export const links = {
   dev: `${site.repo}/blob/main/DEV.md`,
   optimization: `${site.repo}/blob/main/docs/OPTIMIZATION.md`,

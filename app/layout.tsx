@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
-import { site, siteUrl } from "@/lib/site";
+import { ogImage, site, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 /* The system's own two faces: IBM Plex Sans for the interface, JetBrains
@@ -30,14 +30,7 @@ export const metadata: Metadata = {
     description: site.description,
     url: "/",
     locale: "en_US",
-    images: [
-      {
-        url: "/og.jpg",
-        width: 1200,
-        height: 630,
-        alt: "The AtlasOS desktop in Light and Dark: a menu bar on top, and Atlas Notepad and Ghostty over the sakura wallpaper",
-      },
-    ],
+    images: [ogImage],
   },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },

@@ -39,9 +39,28 @@ const nextConfig: NextConfig = {
   /* A self-contained server for the container: Next traces what the app
      imports and writes a few megabytes rather than all of node_modules. */
   output: "standalone",
+  /* Every docs page as Markdown at its own URL plus .md, served by
+     app/docs-raw. These run before the dynamic /docs routes, which would
+     otherwise take "atlas-ui.md" for a library's name. */
+  async rewrites() {
+    return [
+      { source: "/docs.md", destination: "/docs-raw" },
+      { source: "/docs/index.md", destination: "/docs-raw" },
+      { source: "/docs/:library([a-z0-9-]+)\\.md", destination: "/docs-raw/:library" },
+      { source: "/docs/:library([a-z0-9-]+)/index\\.md", destination: "/docs-raw/:library" },
+      { source: "/docs/:library([a-z0-9-]+)/:page([a-z0-9-]+)\\.md", destination: "/docs-raw/:library/:page" },
+    ];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
+      /* The docs' images, SVGs among them. Opened on its own an SVG is a
+         document, so it gets nothing at all: no script, no requests, no
+         forms. A later rule's header replaces an earlier one's. */
+      {
+        source: "/docs/:library/images/:file",
+        headers: [{ key: "Content-Security-Policy", value: "default-src 'none'; style-src 'unsafe-inline'; sandbox" }],
+      },
       /* Screenshots and the mark change only with a deploy. */
       {
         source: "/:path(screens|brand)/:file*",
