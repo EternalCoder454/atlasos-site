@@ -32,10 +32,20 @@ podman save --format docker-archive localhost/atlasos-site:local |
 echo "shipping the config"
 # shellcheck disable=SC2029 # $dir is meant to expand here
 ssh "$host" "[ -d $dir ] || sudo install -d -o \$(id -u) -g \$(id -g) $dir"
+# The download server's config is bind-mounted and rendered when its
+# container starts, and rsync replaces the files (new inodes), so a running
+# container keeps the old config: it is recreated when the config changed.
+nginx_sum() {
+	# shellcheck disable=SC2029 # $dir is meant to expand here
+	ssh "$host" "cd $dir/nginx 2>/dev/null && find . -type f -print0 | sort -z | xargs -0r sha256sum | sha256sum" || true
+}
+nginx_before=$(nginx_sum)
 rsync -rt --delete --chmod=D755,F644 deploy/compose.yaml deploy/nginx "$host:$dir/"
+restart_dl=0
+[ "$(nginx_sum)" = "$nginx_before" ] || restart_dl=1
 
 echo "starting"
-# shellcheck disable=SC2087 # $dir, $url, $old and $rev are meant to expand here
+# shellcheck disable=SC2087 # $dir, $url, $old, $rev and $restart_dl are meant to expand here
 ssh "$host" bash -s <<EOF
 set -euo pipefail
 cd $dir
@@ -55,6 +65,10 @@ caddy=\$(docker ps -q --filter label=com.docker.compose.project=matrix --filter 
 docker inspect "\$caddy" --format '{{range \$net, \$_ := .NetworkSettings.Networks}}{{\$net}} {{end}}' | grep -qw atlasos_inside ||
 	docker network connect atlasos_inside "\$caddy"
 docker compose up -d --remove-orphans
+if [ $restart_dl = 1 ]; then
+	echo "download server config changed: recreating atlasos-dl"
+	docker compose up -d --force-recreate --no-deps atlasos-dl
+fi
 for i in \$(seq 1 30); do
 	sleep 2
 	[ "\$(docker compose ps --format '{{.Health}}' | sort -u)" = healthy ] && break
