@@ -72,7 +72,7 @@ server {
 
 	# /dl/atlasos-44.YYYYMMDD.iso?md5=…&expires=…, made by the site's
 	# /download/<image> route for one address and a few hours.
-	location ~ "^/dl/(?<iso>atlasos(-nvidia)?-44\.[0-9]{8}\.iso)$" {
+	location ~ "^/dl/(?<iso>atlasos(-nvidia)?-44\.[0-9]{8}(-[1-9][0-9]{0,2})?\.iso)$" {
 		limit_except GET { deny all; }
 
 		secure_link $arg_md5,$arg_expires;

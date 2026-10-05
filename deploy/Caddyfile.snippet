@@ -27,7 +27,7 @@ atlasos.eterneon.net {
 	# version, and the checksums. Nothing else in the folder is served.
 	handle_path /dl/* {
 		root * /srv/atlasos-downloads
-		@public path_regexp ^/(atlasos(-nvidia)?\.json|atlasos(-nvidia)?-44\.[0-9]{8}\.iso\.sha256)$
+		@public path_regexp ^/(atlasos(-nvidia)?\.json|atlasos(-nvidia)?-44\.[0-9]{8}(-[1-9][0-9]{0,2})?\.iso\.sha256)$
 		handle @public {
 			header Cache-Control "public, max-age=60"
 			file_server

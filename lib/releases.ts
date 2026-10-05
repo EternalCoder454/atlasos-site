@@ -33,7 +33,7 @@ export async function currentRelease(image: ImageId): Promise<Release | null> {
      exactly the shape CI writes and nothing else. */
   if (
     typeof version !== "string" ||
-    !/^44\.\d{8}$/.test(version) ||
+    !/^44\.\d{8}(-[1-9]\d{0,2})?$/.test(version) ||
     file !== `${image}-${version}.iso` ||
     typeof size !== "number" ||
     !Number.isSafeInteger(size) ||
