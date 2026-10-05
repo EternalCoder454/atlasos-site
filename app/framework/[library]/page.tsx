@@ -22,8 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: d.lib.title,
     description: d.lib.summary,
-    alternates: { canonical: `/docs/${d.lib.slug}`, types: { "text/markdown": `/docs/${d.lib.slug}.md` } },
-    openGraph: docsOpenGraph(d.lib.title, d.lib.summary, `/docs/${d.lib.slug}`),
+    alternates: { canonical: `/framework/${d.lib.slug}`, types: { "text/markdown": `/framework/${d.lib.slug}.md` } },
+    openGraph: docsOpenGraph(d.lib.title, d.lib.summary, `/framework/${d.lib.slug}`),
   };
 }
 
@@ -41,7 +41,7 @@ export default async function LibraryPage({ params }: Props) {
       html={r?.html ?? ""}
       headings={r?.headings ?? []}
       editUrl={r ? editUrl(`docs/reference/${lib.slug}/index.md`) : undefined}
-      {...neighbours(index, `/docs/${lib.slug}`)}
+      {...neighbours(index, `/framework/${lib.slug}`)}
     >
       {lib.pages.length > 0 && (
         <>
@@ -53,7 +53,7 @@ export default async function LibraryPage({ params }: Props) {
               return (
                 <li key={p.slug}>
                   {heading && <p className="bg-ink-1 px-5 pb-2 pt-4 text-xs font-medium uppercase tracking-wider text-text-3">{heading}</p>}
-                  <Link href={`/docs/${lib.slug}/${p.slug}`} className="block px-5 py-4 hover:bg-ink-1">
+                  <Link href={`/framework/${lib.slug}/${p.slug}`} className="block px-5 py-4 hover:bg-ink-1">
                     <span className="font-medium">{p.title}</span>
                     {p.deprecated && <span className="ml-2 text-xs text-sakura">Deprecated</span>}
                     <span className="mt-1 block text-sm text-text-2">{p.summary}</span>

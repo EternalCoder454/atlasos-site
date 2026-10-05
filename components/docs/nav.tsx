@@ -26,9 +26,9 @@ function Search({ libraries }: { libraries: NavLibrary[] }) {
   const all = useMemo(
     () =>
       libraries.flatMap((l) =>
-        [{ href: `/docs/${l.slug}`, title: l.title, lib: "", text: l.title.toLowerCase() }].concat(
+        [{ href: `/framework/${l.slug}`, title: l.title, lib: "", text: l.title.toLowerCase() }].concat(
           l.pages.map((p) => ({
-            href: `/docs/${l.slug}/${p.slug}`,
+            href: `/framework/${l.slug}/${p.slug}`,
             title: p.title,
             lib: l.title,
             text: `${p.title} ${p.summary} ${l.title}`.toLowerCase(),
@@ -54,7 +54,7 @@ function Search({ libraries }: { libraries: NavLibrary[] }) {
         placeholder="Search the docs"
         autoComplete="off"
         spellCheck={false}
-        aria-controls={listId}
+        aria-controls={words.length > 0 ? listId : undefined}
         className="w-full rounded-lg border border-line bg-ink-1 px-3 py-2 text-sm text-text placeholder:text-text-3 focus:border-violet focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
       />
       {words.length > 0 && (
@@ -82,7 +82,7 @@ function Tree({ libraries }: { libraries: NavLibrary[] }) {
       <Link
         href={href}
         aria-current={here ? "page" : undefined}
-        className={`block rounded-md px-3 py-1.5 transition-colors ${
+        className={`block rounded-md px-3 py-1.5 transition-colors pointer-coarse:py-2.5 ${
           here ? "bg-violet-deep/25 text-text" : strong ? "text-text hover:bg-ink-2" : "text-text-2 hover:bg-ink-2 hover:text-text"
         } ${strong ? "font-semibold" : ""}`}
       >
@@ -92,16 +92,16 @@ function Tree({ libraries }: { libraries: NavLibrary[] }) {
   };
   return (
     <nav aria-label="Documentation" className="space-y-6 text-sm">
-      <div>{item("/docs", "Overview", true)}</div>
+      <div>{item("/framework", "Overview", true)}</div>
       {libraries.map((l) => (
         <div key={l.slug}>
-          {item(`/docs/${l.slug}`, l.title, true)}
+          {item(`/framework/${l.slug}`, l.title, true)}
           {groups(l.pages).map(([section, pages]) => (
             <div key={section} className="mt-1">
               {section && <p className="px-3 pb-1 pt-2 text-xs font-medium uppercase tracking-wider text-text-3">{section}</p>}
               <ul className="space-y-0.5">
                 {pages.map((p) => (
-                  <li key={p.slug}>{item(`/docs/${l.slug}/${p.slug}`, p.title)}</li>
+                  <li key={p.slug}>{item(`/framework/${l.slug}/${p.slug}`, p.title)}</li>
                 ))}
               </ul>
             </div>

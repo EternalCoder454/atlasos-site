@@ -1,5 +1,5 @@
 import "server-only";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -193,6 +193,7 @@ export async function fetchSource(rel: string, max: number): Promise<Uint8Array 
     const file = path.resolve(root, rel);
     if (!file.startsWith(root)) throw new Error(`outside the docs folder: ${rel}`);
     try {
+      if ((await stat(file)).size > max) throw new Error(`larger than ${max} bytes`);
       const buf = await readFile(file);
       if (buf.byteLength > max) throw new Error(`larger than ${max} bytes`);
       return new Uint8Array(buf);
@@ -213,6 +214,13 @@ export async function fetchSource(rel: string, max: number): Promise<Uint8Array 
 
 const decoder = new TextDecoder("utf-8", { fatal: true });
 
+/* What else caches by commit (rendered pages, the readers' Markdown)
+   empties itself here when a new commit is published. */
+const commitListeners: (() => void)[] = [];
+export function onNewCommit(fn: () => void): void {
+  commitListeners.push(fn);
+}
+
 let current: { at: number; index: DocsIndex | null; failedAt: number } = { at: 0, index: null, failedAt: 0 };
 let inflight: Promise<DocsIndex | null> | null = null;
 
@@ -222,7 +230,10 @@ async function loadIndex(): Promise<DocsIndex | null> {
     if (!buf) throw new Error("index.json is missing");
     const index = parseIndex(JSON.parse(decoder.decode(buf)));
     if (!index) throw new Error("index.json isn't in the expected shape");
-    if (index.commit !== current.index?.commit) pageCache.clear();
+    if (index.commit !== current.index?.commit) {
+      pageCache.clear();
+      for (const fn of commitListeners) fn();
+    }
     current = { at: Date.now(), index, failedAt: 0 };
   } catch (e) {
     console.error(`docs: couldn't refresh index.json from ${source}: ${(e as Error).message}`);
@@ -265,9 +276,12 @@ export function docsMarkdown(index: DocsIndex, rel: string): Promise<string | nu
   const key = `${index.commit}:${rel}`;
   let p = pageCache.get(key);
   if (!p) {
-    p = fetchSource(rel, maxPageBytes).then((buf) => (buf ? decoder.decode(buf) : null));
+    const mine = fetchSource(rel, maxPageBytes).then((buf) => (buf ? decoder.decode(buf) : null));
+    p = mine;
     // A failure isn't remembered: the next request tries again.
-    p.catch(() => pageCache.delete(key));
+    mine.catch(() => {
+      if (pageCache.get(key) === mine) pageCache.delete(key);
+    });
     if (pageCache.size >= maxCachedPages) pageCache.delete(pageCache.keys().next().value!);
     pageCache.set(key, p);
   }

@@ -25,15 +25,15 @@ function Header() {
           {/* eslint-disable-next-line @next/next/no-img-element -- a 3 KB SVG */}
           <img src="/brand/atlas-mark.svg" alt="" width={28} height={28} className="size-7" />
           <span className="whitespace-nowrap">
-            AtlasOS <span className="font-normal text-text-3 max-[359px]:hidden">Linux</span>
+            AtlasOS <span className="font-normal text-text-3 max-[379px]:hidden">Linux</span>
           </span>
         </a>
         <nav aria-label="Main" className="flex items-center gap-1 text-sm sm:gap-2">
           <a href="#tools" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Tools</a>
           <a href="#updates" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Updates</a>
           <a href="#looks" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Looks</a>
-          <Link href="/docs" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text sm:block">Docs</Link>
-          <a href={site.repo} className="rounded-md px-3 py-2 text-text-2 hover:text-text">GitHub</a>
+          <Link href="/framework" title="Atlas Framework API" className="rounded-md px-2 py-2 text-text-2 hover:text-text sm:px-3">API</Link>
+          <a href={site.repo} className="rounded-md px-2 py-2 text-text-2 hover:text-text sm:px-3">GitHub</a>
           <a href="#download" className="rounded-lg bg-violet-deep px-4 py-2 font-semibold text-white hover:bg-violet">
             Download
           </a>
@@ -431,7 +431,7 @@ function Footer() {
           <a className="hover:text-text" href={site.repo}>Source</a>
           <a className="hover:text-text" href={site.installerRepo}>Installer</a>
           <a className="hover:text-text" href={links.dev}>For developers</a>
-          <Link className="hover:text-text" href="/docs">Framework docs</Link>
+          <Link className="hover:text-text" href="/framework">Framework API</Link>
           <a className="hover:text-text" href={links.privacy}>Privacy</a>
         </nav>
       </div>

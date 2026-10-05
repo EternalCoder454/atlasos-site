@@ -9,6 +9,7 @@ import remarkRehype from "remark-rehype";
 import { createHighlighterCore, type HighlighterCore } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 import { unified } from "unified";
+import { onNewCommit } from "@/lib/docs/source";
 
 /* Markdown from the framework's docs to HTML for the page. Everything the
    Markdown says goes through rehype-sanitize first (raw HTML never makes
@@ -100,7 +101,7 @@ function slugger() {
     let base = text
       .toLowerCase()
       .trim()
-      .replace(/[^\p{L}\p{N}\s_-]/gu, "")
+      .replace(/[^\p{L}\p{M}\p{N}\s_-]/gu, "")
       .replace(/\s/g, "-");
     if (!base) base = "section";
     let id = base;
@@ -136,13 +137,13 @@ export function resolveLink(href: string, ctx: RenderContext): string | null {
     return null;
   }
   if (rel.startsWith("../") || rel.startsWith("/")) return null;
-  if (rel === "index.md") return `/docs${hash}`;
+  if (rel === "index.md") return `/framework${hash}`;
   let m = /^([a-z0-9-]+)\/index\.md$/.exec(rel);
-  if (m) return `/docs/${m[1]}${hash}`;
+  if (m) return `/framework/${m[1]}${hash}`;
   m = /^([a-z0-9-]+)\/([a-z0-9-]+)\.md$/.exec(rel);
-  if (m) return `/docs/${m[1]}/${m[2]}${hash}`;
+  if (m) return `/framework/${m[1]}/${m[2]}${hash}`;
   m = /^([a-z0-9-]+)\/images\/([^/]+)$/.exec(rel);
-  if (m && imageFile.test(m[2])) return `/docs/${m[1]}/images/${m[2]}`;
+  if (m && imageFile.test(m[2])) return `/framework/${m[1]}/images/${m[2]}`;
   return null;
 }
 
@@ -184,7 +185,13 @@ function siteTransforms(ctx: RenderContext, headings: Heading[], code: Element[]
 
         if (node.tagName === "blockquote") {
           const c = callout(node);
-          if (c) parent.children[i] = c;
+          if (c) {
+            // The callout's children are a new array: walk that one, so
+            // what the walk replaces lands in the tree.
+            parent.children[i] = c;
+            walk(c);
+            continue;
+          }
         } else if (/^h[1-6]$/.test(node.tagName) && node.properties.id === undefined) {
           // The page title is the only h1: the Markdown's start at h2. (A
           // heading with an id already is the footnotes' hidden one.)
@@ -202,7 +209,10 @@ function siteTransforms(ctx: RenderContext, headings: Heading[], code: Element[]
           continue;
         } else if (node.tagName === "a") {
           const href = String(node.properties.href ?? "");
-          if (/^(?:https?:|mailto:)/i.test(href)) {
+          // Only https: and mailto: leave the site (the contract with
+          // tools/docs.py); any other scheme falls through to resolveLink,
+          // which turns it into plain words.
+          if (/^(?:https:|mailto:)/i.test(href)) {
             if (!/^mailto:/i.test(href)) node.properties.rel = ["noopener", "noreferrer"];
           } else if (href.startsWith("#")) {
             // an anchor on this page: as written
@@ -227,6 +237,10 @@ function siteTransforms(ctx: RenderContext, headings: Heading[], code: Element[]
             parent.children[i] = { type: "text", value: String(node.properties.alt ?? "") };
           }
           continue;
+        } else if (node.tagName === "input" && node.properties.type === "checkbox") {
+          // A task list's box: read out as its state.
+          node.properties.ariaLabel = node.properties.checked ? "Done" : "Not done";
+          continue;
         } else if (node.tagName === "table") {
           walk(node);
           parent.children[i] = el("div", { className: ["table-wrap"], tabIndex: 0, role: "region", ariaLabel: "Table" }, [node]);
@@ -245,13 +259,16 @@ function siteTransforms(ctx: RenderContext, headings: Heading[], code: Element[]
   };
 }
 
+const maxHighlight = 64 << 10;
+
 async function highlight(pre: Element): Promise<void> {
   const codeEl = pre.children.find((c) => c.type === "element" && c.tagName === "code") as Element | undefined;
   if (!codeEl) return;
   const classes = (codeEl.properties.className as string[] | undefined) ?? [];
   const named = classes.find((c) => c.startsWith("language-"))?.slice("language-".length) ?? "";
   const source = textOf(codeEl).replace(/\n$/, "");
-  const lang = resolveLang(named);
+  // Highlighting is synchronous too: a huge block is shown plain.
+  const lang = source.length <= maxHighlight ? resolveLang(named) : null;
   pre.properties = { className: ["code"], dataLang: named || "text" };
   if (!lang) {
     pre.children = [el("code", {}, [{ type: "text", value: source }])];
@@ -271,6 +288,11 @@ async function highlight(pre: Element): Promise<void> {
    cached). Real pages have a few hundred. */
 export const maxDelimiters = 8000;
 
+/* Deeply nested quotes and lists overflow the parser's stack. No real page
+   nests more than a few levels; a line's prefix of indentation, ">" and
+   list markers is held to this many characters. */
+export const maxPrefix = 160;
+
 export function delimiterCount(md: string): number {
   let n = 0;
   let fence: string | null = null;
@@ -284,6 +306,8 @@ export function delimiterCount(md: string): number {
       fence = f[1];
       continue;
     }
+    // Over the nesting limit counts as over the budget.
+    if ((/^(?:[ \t]*(?:>|[*+-][ \t]|\d{1,9}[.)][ \t]))*/.exec(line)?.[0].length ?? 0) > maxPrefix) return Infinity;
     for (let i = 0; i < line.length; i++) {
       const c = line.charCodeAt(i);
       // * _ ~ [ ]
@@ -303,7 +327,9 @@ const tooComplex: Rendered = {
 export async function renderMarkdown(md: string, ctx: RenderContext): Promise<Rendered> {
   const delimiters = delimiterCount(md);
   if (delimiters > maxDelimiters) {
-    console.error(`docs: ${ctx.file} has ${delimiters} emphasis and link marks, over ${maxDelimiters}; not rendered`);
+    console.error(
+      `docs: ${ctx.file} has ${delimiters === Infinity ? "nesting deeper than the site renders" : `${delimiters} emphasis and link marks, over ${maxDelimiters}`}; not rendered`,
+    );
     return tooComplex;
   }
   const headings: Heading[] = [];
@@ -325,13 +351,17 @@ export async function renderMarkdown(md: string, ctx: RenderContext): Promise<Re
 
 /* Rendered pages, per index commit, like the Markdown they come from. */
 const cache = new Map<string, Promise<Rendered>>();
+onNewCommit(() => cache.clear());
 
 export function renderCached(commit: string, md: string, ctx: RenderContext): Promise<Rendered> {
   const key = `${commit}:${ctx.file}`;
   let p = cache.get(key);
   if (!p) {
-    p = renderMarkdown(md, ctx);
-    p.catch(() => cache.delete(key));
+    const mine = renderMarkdown(md, ctx);
+    p = mine;
+    mine.catch(() => {
+      if (cache.get(key) === mine) cache.delete(key);
+    });
     if (cache.size >= 600) cache.delete(cache.keys().next().value!);
     cache.set(key, p);
   }

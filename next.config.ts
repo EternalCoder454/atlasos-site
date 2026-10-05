@@ -40,15 +40,23 @@ const nextConfig: NextConfig = {
      imports and writes a few megabytes rather than all of node_modules. */
   output: "standalone",
   /* Every docs page as Markdown at its own URL plus .md, served by
-     app/docs-raw. These run before the dynamic /docs routes, which would
-     otherwise take "atlas-ui.md" for a library's name. */
+     app/framework-raw. These run before the dynamic /framework routes,
+     which would otherwise take "atlas-ui.md" for a library's name. */
+  /* The docs were at /docs for their first day. */
+  async redirects() {
+    return [
+      { source: "/docs.md", destination: "/framework.md", permanent: true },
+      { source: "/docs", destination: "/framework", permanent: true },
+      { source: "/docs/:path*", destination: "/framework/:path*", permanent: true },
+    ];
+  },
   async rewrites() {
     return [
-      { source: "/docs.md", destination: "/docs-raw" },
-      { source: "/docs/index.md", destination: "/docs-raw" },
-      { source: "/docs/:library([a-z0-9-]+)\\.md", destination: "/docs-raw/:library" },
-      { source: "/docs/:library([a-z0-9-]+)/index\\.md", destination: "/docs-raw/:library" },
-      { source: "/docs/:library([a-z0-9-]+)/:page([a-z0-9-]+)\\.md", destination: "/docs-raw/:library/:page" },
+      { source: "/framework.md", destination: "/framework-raw" },
+      { source: "/framework/index.md", destination: "/framework-raw" },
+      { source: "/framework/:library([a-z0-9-]+)\\.md", destination: "/framework-raw/:library" },
+      { source: "/framework/:library([a-z0-9-]+)/index\\.md", destination: "/framework-raw/:library" },
+      { source: "/framework/:library([a-z0-9-]+)/:page([a-z0-9-]+)\\.md", destination: "/framework-raw/:library/:page" },
     ];
   },
   async headers() {
@@ -58,7 +66,7 @@ const nextConfig: NextConfig = {
          document, so it gets nothing at all: no script, no requests, no
          forms. A later rule's header replaces an earlier one's. */
       {
-        source: "/docs/:library/images/:file",
+        source: "/framework/:library/images/:file",
         headers: [{ key: "Content-Security-Policy", value: "default-src 'none'; style-src 'unsafe-inline'; sandbox" }],
       },
       /* Screenshots and the mark change only with a deploy. */

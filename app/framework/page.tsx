@@ -15,10 +15,10 @@ async function intro() {
 export async function generateMetadata(): Promise<Metadata> {
   const i = await intro();
   return {
-    title: { absolute: "Atlas Framework docs" },
+    title: { absolute: "Atlas Framework API" },
     description: i?.summary,
-    alternates: { canonical: "/docs", types: { "text/markdown": "/docs.md" } },
-    openGraph: docsOpenGraph(i?.title ?? "Atlas Framework docs", i?.summary ?? "", "/docs"),
+    alternates: { canonical: "/framework", types: { "text/markdown": "/framework.md" } },
+    openGraph: docsOpenGraph(i?.title ?? "Atlas Framework API", i?.summary ?? "", "/framework"),
   };
 }
 
@@ -33,13 +33,13 @@ export default async function DocsHome() {
       html={r?.html ?? ""}
       headings={r?.headings ?? []}
       editUrl={i.md !== null ? editUrl("docs/reference/index.md") : undefined}
-      {...neighbours(i.index, "/docs")}
+      {...neighbours(i.index, "/framework")}
     >
       <h2 className="mt-12 text-xl font-semibold tracking-tight">Libraries</h2>
       <ul className="mt-5 grid gap-4 sm:grid-cols-2">
         {i.index.libraries.map((l) => (
           <li key={l.slug}>
-            <Link href={`/docs/${l.slug}`} className="block h-full rounded-xl border border-line bg-ink-1 p-5 transition-colors hover:border-line-strong">
+            <Link href={`/framework/${l.slug}`} className="block h-full rounded-xl border border-line bg-ink-1 p-5 transition-colors hover:border-line-strong">
               <span className="font-semibold">{l.title}</span>
               <span className="mt-2 block text-sm text-text-2">{l.summary}</span>
               <span className="mt-3 block text-xs text-text-3">

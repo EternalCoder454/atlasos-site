@@ -19,15 +19,15 @@ export async function GET() {
   ];
   if (index) {
     lines.push(
-      "## Atlas Framework docs",
+      "## Atlas Framework API",
       "",
-      `Reference for atlas-framework ${mdText(index.version)}, the shared base the Atlas apps build on. Every page below is Markdown; ${siteUrl}/docs/llms-full.txt has them all in one file.`,
+      `Reference for atlas-framework ${mdText(index.version)}, the shared base the Atlas apps build on. Every page below is Markdown; ${siteUrl}/framework/llms-full.txt has them all in one file.`,
       "",
-      `- [Overview](${siteUrl}/docs.md)`,
+      `- [Overview](${siteUrl}/framework.md)`,
     );
     for (const l of index.libraries) {
-      lines.push(`- [${mdText(l.title)}](${siteUrl}/docs/${l.slug}.md): ${mdText(l.summary)}`);
-      for (const p of sectionOrder(l.pages)) lines.push(`  - [${mdText(p.title)}](${siteUrl}/docs/${l.slug}/${p.slug}.md): ${mdText(p.summary)}`);
+      lines.push(`- [${mdText(l.title)}](${siteUrl}/framework/${l.slug}.md): ${mdText(l.summary)}`);
+      for (const p of sectionOrder(l.pages)) lines.push(`  - [${mdText(p.title)}](${siteUrl}/framework/${l.slug}/${p.slug}.md): ${mdText(p.summary)}`);
     }
     lines.push("");
   }

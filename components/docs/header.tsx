@@ -13,8 +13,8 @@ export function DocsHeader({ version, released }: { version?: string; released?:
             <span className="whitespace-nowrap max-[420px]:sr-only">AtlasOS</span>
           </Link>
           <span aria-hidden="true" className="text-line-strong">/</span>
-          <Link href="/docs" className="truncate font-medium text-text-2 hover:text-text">
-            Framework docs
+          <Link href="/framework" className="truncate font-medium text-text-2 hover:text-text">
+            Framework API
           </Link>
           {version && (
             <span className="hidden whitespace-nowrap rounded-full border border-line px-2 py-0.5 text-xs text-text-3 sm:inline">

@@ -8,7 +8,7 @@ import { docsIndex } from "@/lib/docs/source";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: { template: "%s · Atlas Framework docs", default: "Atlas Framework docs" },
+  title: { template: "%s · Atlas Framework API", default: "Atlas Framework API" },
 };
 
 export default async function DocsLayout({ children }: { children: React.ReactNode }) {

@@ -445,7 +445,11 @@ html.motion [data-terminal] :is([data-line], [data-out]):not([data-shown]) {
       opacity: 1;
     }
     .docs-prose pre.code {
-      padding-top: 2.6rem;
+      padding-top: 3.25rem;
+    }
+    .copy-code {
+      min-height: 2.5rem;
+      padding-inline: 0.9rem;
     }
   }
   .copy-code:hover {

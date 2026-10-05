@@ -66,3 +66,15 @@ Footnote here[^1].
 ## a
 
 ## a-1
+
+> [!NOTE]
+> A callout with an image ![local](images/button.svg), a remote one ![gone](https://example.com/y.png),
+> a [link](spring-animation.md) and code:
+>
+> ```qml
+> PrimaryButton { text: "Inside" }
+> ```
+>
+> | A | B |
+> |---|---|
+> | 1 | 2 |

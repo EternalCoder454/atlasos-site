@@ -19,7 +19,7 @@ async function load(params: Props["params"]) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const d = await load(params);
   if (!d) return {};
-  const href = `/docs/${d.lib.slug}/${d.page.slug}`;
+  const href = `/framework/${d.lib.slug}/${d.page.slug}`;
   return {
     title: `${d.page.title} · ${d.lib.title}`,
     description: d.page.summary,
@@ -44,7 +44,7 @@ export default async function DocPage({ params }: Props) {
       since={page.since}
       deprecated={page.deprecated}
       editUrl={editUrl(page.source)}
-      {...neighbours(index, `/docs/${lib.slug}/${page.slug}`)}
+      {...neighbours(index, `/framework/${lib.slug}/${page.slug}`)}
     />
   );
 }

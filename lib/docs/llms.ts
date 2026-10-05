@@ -8,12 +8,13 @@ import { siteUrl } from "@/lib/site";
 
 const maxChars = 8 << 20;
 
-let cached: { commit: string; text: Promise<string> } | null = null;
+let cached: { commit: string; text: Promise<{ text: string; complete: boolean }> } | null = null;
 
-async function build(index: DocsIndex): Promise<string> {
+async function build(index: DocsIndex): Promise<{ text: string; complete: boolean }> {
   const urls = readingOrder(index).map((p) => p.href);
   const parts: string[] = new Array(urls.length).fill("");
   let next = 0;
+  let complete = true;
   const worker = async () => {
     while (next < urls.length) {
       const i = next++;
@@ -22,7 +23,9 @@ async function build(index: DocsIndex): Promise<string> {
         const r = await readerMarkdown(index, segs);
         parts[i] = r ? `<!-- ${siteUrl}${r.href} -->\n\n${r.md}` : "";
       } catch (e) {
-        // One unreadable page leaves a gap, not the whole file.
+        // One unreadable page leaves a gap, not the whole file. The gap
+        // isn't kept: the next request builds the file again.
+        complete = false;
         console.error(`docs: llms-full.txt leaves out ${urls[i]}: ${(e as Error).message}`);
       }
     }
@@ -36,17 +39,21 @@ async function build(index: DocsIndex): Promise<string> {
     }
     out += `${out ? "\n\n---\n\n" : ""}${part}`;
   }
-  return `${out}\n`;
+  return { text: `${out}\n`, complete };
 }
 
-export function llmsFull(index: DocsIndex): Promise<string> {
+export async function llmsFull(index: DocsIndex): Promise<string> {
   if (cached?.commit !== index.commit) {
-    const text = build(index);
-    const entry = { commit: index.commit, text };
-    text.catch(() => {
-      if (cached === entry) cached = null;
-    });
+    const entry = { commit: index.commit, text: build(index) };
     cached = entry;
+    entry.text.then(
+      (r) => {
+        if (!r.complete && cached === entry) cached = null;
+      },
+      () => {
+        if (cached === entry) cached = null;
+      },
+    );
   }
-  return cached.text;
+  return (await cached.text).text;
 }
