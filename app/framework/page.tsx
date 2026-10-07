@@ -15,10 +15,10 @@ async function intro() {
 export async function generateMetadata(): Promise<Metadata> {
   const i = await intro();
   return {
-    title: { absolute: "Atlas Framework API" },
+    title: { absolute: "Telamon Framework API" },
     description: i?.summary,
     alternates: { canonical: "/framework", types: { "text/markdown": "/framework.md" } },
-    openGraph: docsOpenGraph(i?.title ?? "Atlas Framework API", i?.summary ?? "", "/framework"),
+    openGraph: docsOpenGraph(i?.title ?? "Telamon Framework API", i?.summary ?? "", "/framework"),
   };
 }
 

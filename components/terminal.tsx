@@ -1,7 +1,7 @@
-/* A Ghostty window on AtlasOS, running a short first session. Every line of
-   output is what these commands really print on AtlasOS, recorded in a
+/* A Ghostty window on Telamon OS, running a short first session. Every line of
+   output is what these commands really print on Telamon OS, recorded in a
    pseudo-terminal from the image itself (the clone from a small public repo,
-   renamed), in Ghostty's default colours and the AtlasOS window frame.
+   renamed), in Ghostty's default colours and the Telamon OS window frame.
 
    components/motion.tsx types it out when it comes into view; the markup
    here is how it ends, which is what reduced motion and no-script visitors
@@ -128,7 +128,7 @@ const session: Step[] = [
   },
 ];
 
-/* The prompt AtlasOS's bash shows, all in green. */
+/* The prompt Telamon OS's bash shows, all in green. */
 function Prompt({ cwd }: { cwd: string }) {
   return <span className="select-none text-[#b5bd68]">you@atlasos:{cwd}$ </span>;
 }
@@ -144,7 +144,7 @@ function Output({ line }: { line: Line }) {
   );
 }
 
-/* KDE's window buttons, as the AtlasOS window frame draws them. */
+/* KDE's window buttons, as the Telamon OS window frame draws them. */
 function Buttons() {
   const path = ["M4 6.5 8 10.5 12 6.5", "M4 10 8 6 12 10", "M4.5 4.5 11.5 11.5M11.5 4.5 4.5 11.5"];
   return (

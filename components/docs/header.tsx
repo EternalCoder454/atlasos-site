@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-/* The docs' bar: back to AtlasOS on the left, the docs and the source on
+/* The docs' bar: back to Telamon OS on the left, the docs and the source on
    the right. Plain links: nothing here needs script. */
 export function DocsHeader({ version, released }: { version?: string; released?: boolean }) {
   return (
@@ -10,7 +10,7 @@ export function DocsHeader({ version, released }: { version?: string; released?:
           <Link href="/" className="flex items-center gap-2.5 font-semibold tracking-tight">
             {/* eslint-disable-next-line @next/next/no-img-element -- a 3 KB SVG */}
             <img src="/brand/atlas-mark.svg" alt="" width={28} height={28} className="size-7" />
-            <span className="whitespace-nowrap max-[420px]:sr-only">AtlasOS</span>
+            <span className="whitespace-nowrap max-[420px]:sr-only">Telamon OS</span>
           </Link>
           <span aria-hidden="true" className="text-line-strong">/</span>
           <Link href="/framework" className="truncate font-medium text-text-2 hover:text-text">
@@ -28,7 +28,7 @@ export function DocsHeader({ version, released }: { version?: string; released?:
             GitHub
           </a>
           <Link href="/#download" className="hidden rounded-lg bg-violet-deep px-4 py-2 font-semibold text-white hover:bg-violet sm:block">
-            Download AtlasOS
+            Download Telamon OS
           </Link>
         </nav>
       </div>

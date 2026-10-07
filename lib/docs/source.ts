@@ -3,7 +3,7 @@ import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-/* The atlas-framework documentation. The framework's CI checks the Markdown
+/* The Telamon framework documentation (the atlas-framework repo). The framework's CI checks the Markdown
    in its docs/reference/ and force-pushes the result to the docs-published
    branch: one index.json, and <library>/<page>.md with <library>/images/.
    The site reads that branch at runtime, so a docs change goes live within

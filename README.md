@@ -1,6 +1,6 @@
-# AtlasOS Site
+# Telamon OS Site
 
-The website for AtlasOS at https://telamon.eterneon.net, with the ISO
+The website for Telamon OS (formerly AtlasOS) at https://telamon.eterneon.net, with the ISO
 downloads. Next.js 16, Tailwind 4 and Motion, the same stack as the Eterneon
 site; one page, no `src` directory.
 
@@ -13,8 +13,8 @@ deploy/deploy.sh     # build here, ship to eterneon-vps, restart
 
 ## Downloads
 
-The ISOs (about 4 GB each) are built and uploaded by AtlasOS's CI
-(`.github/workflows/iso.yml` in the AtlasOS repo) to `/srv/downloads/atlasos`
+The ISOs (about 4 GB each) are built and uploaded by Telamon OS's CI
+(`.github/workflows/iso.yml` in the AtlasOS repo, which is yet to be renamed) to `/srv/downloads/atlasos`
 on the VPS, with an `<image>.json` naming the current version.
 
 - The page's buttons go to `/download/<image>` (`app/download/[image]/route.ts`).

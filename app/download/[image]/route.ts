@@ -18,7 +18,7 @@ const noStore = {
 };
 
 function page(status: number, title: string, body: string, extra: Record<string, string> = {}) {
-  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${title} · AtlasOS</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0e0c24;color:#eeecfa;font:16px/1.6 system-ui,sans-serif;padding:16px}main{max-width:32rem}h1{font-size:1.5rem;margin:0 0 .5rem}p{color:#b8b2da}a{color:#c3b8ff}</style></head><body><main><h1>${title}</h1><p>${body}</p><p><a href="/#download">Back to AtlasOS</a></p></main></body></html>`;
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${title} · Telamon OS</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0e0c24;color:#eeecfa;font:16px/1.6 system-ui,sans-serif;padding:16px}main{max-width:32rem}h1{font-size:1.5rem;margin:0 0 .5rem}p{color:#b8b2da}a{color:#c3b8ff}</style></head><body><main><h1>${title}</h1><p>${body}</p><p><a href="/#download">Back to Telamon OS</a></p></main></body></html>`;
   return new Response(html, {
     status,
     headers: { "Content-Type": "text/html; charset=utf-8", ...noStore, ...extra },

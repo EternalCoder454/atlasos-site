@@ -25,14 +25,14 @@ function Header() {
           {/* eslint-disable-next-line @next/next/no-img-element -- a 3 KB SVG */}
           <img src="/brand/atlas-mark.svg" alt="" width={28} height={28} className="size-7" />
           <span className="whitespace-nowrap">
-            AtlasOS <span className="font-normal text-text-3 max-[379px]:hidden">Linux</span>
+            Telamon OS
           </span>
         </a>
         <nav aria-label="Main" className="flex items-center gap-1 text-sm sm:gap-2">
           <a href="#tools" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Tools</a>
           <a href="#updates" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Updates</a>
           <a href="#looks" className="hidden rounded-md px-3 py-2 text-text-2 hover:text-text md:block">Looks</a>
-          <Link href="/framework" title="Atlas Framework API" className="rounded-md px-2 py-2 text-text-2 hover:text-text sm:px-3">API</Link>
+          <Link href="/framework" title="Telamon Framework API" className="rounded-md px-2 py-2 text-text-2 hover:text-text sm:px-3">API</Link>
           <a href={site.repo} className="rounded-md px-2 py-2 text-text-2 hover:text-text sm:px-3">GitHub</a>
           <a href="#download" className="rounded-lg bg-violet-deep px-4 py-2 font-semibold text-white hover:bg-violet">
             Download
@@ -50,7 +50,7 @@ function Header() {
   );
 }
 
-const heroWords = ["build things.", "write code.", "ship software.", "self-host.", "tinker."];
+const heroWords = ["build things.", "write code.", "ship software.", "self-host.", "run AI locally.", "tinker."];
 
 function Hero() {
   return (
@@ -90,9 +90,6 @@ function Hero() {
             Or switch from Fedora Atomic <span aria-hidden="true">→</span>
           </a>
         </div>
-        <p className="mt-5 text-sm text-text-3">
-          AtlasOS Linux is its own project, not related to AtlasOS for Windows.
-        </p>
 
         <figure className="relative mt-14 sm:mt-16">
           <Horizon />
@@ -101,11 +98,11 @@ function Hero() {
               name="desktop"
               priority
               sizes="(min-width: 72rem) 1104px, calc(100vw - 2rem)"
-              alt="The AtlasOS desktop, cut diagonally into AtlasOS Light on the left and AtlasOS Dark on the right: the menu bar on top, the floating dock at the bottom, and Atlas Notepad and Ghostty open over the sakura wallpaper."
+              alt="The Telamon OS desktop, cut diagonally into Telamon OS Light on the left and Telamon OS Dark on the right: the menu bar on top, the floating dock at the bottom, and Telamon Notepad and Ghostty open over the sakura wallpaper."
             />
           </div>
           <figcaption className="mt-3 text-sm text-text-3">
-            The menu bar on top, the dock at the bottom, in AtlasOS Light and Dark.
+            The menu bar on top, the dock at the bottom, in Telamon OS Light and Dark.
           </figcaption>
         </figure>
       </div>
@@ -130,8 +127,9 @@ function Tools() {
               ["Terminal", <><b className="font-semibold text-text">Ghostty</b> on Ctrl+Alt+T, and &ldquo;Open Terminal Here&rdquo; in Dolphin.</>],
               ["Containers", <>Podman with a <code className="text-sm">docker</code> command and compose. Toolbox and Distrobox for mutable environments.</>],
               ["Runtimes", <><a className={link} href="https://mise.jdx.dev">mise</a> for Node, Python, Go and the rest.</>],
-              ["Command line", <>git, gh, just, jq, ripgrep, fd, gdb, strace and perf, with Atlas Monitor in place of btop.</>],
-              ["Editing", <>Atlas Notepad as the text editor, with file watch limits raised for big projects.</>],
+              ["Command line", <>git, gh, just, jq, ripgrep, fd, gdb, strace and perf, with Telamon Monitor in place of btop.</>],
+              ["Editing", <>Telamon Notepad as the text editor, with file watch limits raised for big projects.</>],
+              ["Local AI", <>Run models on your own machine with tools like <a className={link} href="https://ollama.com">Ollama</a>. It usually needs a dedicated GPU.</>],
               ["Everything else", <><code className="text-sm">atlas</code>, a menu for Homebrew, Docker tools on Podman and JetBrains Toolbox. <a className={link} href={links.software}>Where software goes</a>.</>],
             ].map(([term, text]) => (
               <div key={term as string} className="grid gap-1 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
@@ -145,7 +143,7 @@ function Tools() {
         <figure data-reveal className="lg:sticky lg:top-24">
           <Terminal />
           <p className="sr-only">
-            A terminal session on AtlasOS: clone a project with gh, install Node 22 with mise, run the
+            A terminal session on Telamon OS: clone a project with gh, install Node 22 with mise, run the
             tests with just, start Postgres and Valkey with docker compose, and list the atlas menu.
           </p>
           <figcaption className="mt-3 text-sm text-text-3">All of it there on first boot, nothing to add.</figcaption>
@@ -156,10 +154,10 @@ function Tools() {
 }
 
 const updateSteps = [
-  ["Downloads while you work", "Atlas Updater sits in the tray and fetches the next version in the background. The whole system is one tested, signed image, updated in one piece."],
+  ["Downloads while you work", "Telamon Updater sits in the tray and fetches the next version in the background. The whole system is one tested, signed image, updated in one piece."],
   ["Restarts when you say", "Restart now or pick a time. See what's new before you do, and update your Flatpak apps from the same window."],
   ["Goes back in one click", "Don't like an update? Go Back returns you to the previous version, which is always kept."],
-  ["Rolls itself back", "If a new version fails its startup checks, AtlasOS boots the last good one on its own, and won't download that version again."],
+  ["Rolls itself back", "If a new version fails its startup checks, Telamon OS boots the last good one on its own, and won't download that version again."],
 ];
 
 function Updates() {
@@ -181,7 +179,7 @@ function Updates() {
             <Screenshot
               name="updater-dark"
               sizes="(min-width: 72rem) 600px, (min-width: 64rem) 54vw, calc(100vw - 2rem)"
-              alt="Atlas Updater in the dark theme, showing AtlasOS is up to date, with the current, ready and previous versions listed."
+              alt="Telamon Updater in the dark theme, showing Telamon OS is up to date, with the current, ready and previous versions listed."
             />
           </div>
           {/* Each step's dot sits on the line, centred on its title's first
@@ -209,7 +207,7 @@ function Updates() {
         <p data-reveal className="mt-12 max-w-3xl text-text-2">
           Two channels: <b className="font-semibold text-text">Stable</b>, weekly, and{" "}
           <b className="font-semibold text-text">Testing</b>, daily, for the brave. Updates install
-          only if they carry the AtlasOS signature.
+          only if they carry the Telamon OS signature.
         </p>
       </div>
     </section>
@@ -225,7 +223,7 @@ function Numbers() {
             Half the memory, before you open anything.
           </h2>
           <p className="mt-4 text-lg text-text-2">
-            AtlasOS keeps what&apos;s good about Fedora and Plasma and drops what most people never
+            Telamon OS keeps what&apos;s good about Fedora and Plasma and drops what most people never
             use, so your editor, your containers and your browser get the memory instead.
           </p>
           <p className="mt-4 text-text-2">
@@ -253,7 +251,7 @@ function Looks() {
             Looks finished on the first boot.
           </h2>
           <p className="mt-4 text-lg text-text-2">
-            Plasma and KWin with AtlasOS&apos;s own style for the desktop and the apps, so nothing
+            Plasma and KWin with Telamon OS&apos;s own style for the desktop and the apps, so nothing
             extra runs in the background to make it look this way.
           </p>
         </div>
@@ -274,7 +272,7 @@ function Looks() {
               <Screenshot
                 name="launcher"
                 sizes="(min-width: 72rem) 540px, (min-width: 48rem) 46vw, calc(100vw - 2rem)"
-                alt="The app launcher over the dock, cut diagonally into AtlasOS Light and Dark, with the favourite apps up front and one search box."
+                alt="The app launcher over the dock, cut diagonally into Telamon OS Light and Dark, with the favourite apps up front and one search box."
               />
             </div>
             <figcaption className="mt-3 text-sm text-text-3">The launcher, centred over the dock. Its search is the one search.</figcaption>
@@ -285,7 +283,7 @@ function Looks() {
           {[
             "A menu bar on top, a floating dock below, both see-through and blurred",
             "Rounded windows, soft shadows, acrylic-style menus, and right-click menus that keep every action",
-            "Two themes, AtlasOS Light and Dark, and the wallpaper turns to night with Dark",
+            "Two themes, Telamon OS Light and Dark, and the wallpaper turns to night with Dark",
             "Bibata cursors and Papirus icons, matched to each theme",
             "IBM Plex Sans for the interface, JetBrains Mono for code",
             "Notifications that slide down at the top centre, under the clock",
@@ -313,7 +311,7 @@ const leftOut = [
 ];
 const swapped = [
   ["Konsole", "Ghostty"],
-  ["Firefox", "Brave Origin"],
+  ["Firefox", "Brave"],
 ];
 
 function Less() {
@@ -377,8 +375,8 @@ function Less() {
   );
 }
 
-/* What the name is about. Atlas holds up the sky; AtlasOS starts with one
-   desk. Honest about the size, open about the aim. */
+/* What the name is about. A telamon is a figure that holds up a building;
+   Telamon OS starts with one desk. Honest about the size, open about the aim. */
 function Ethos() {
   return (
     <section aria-labelledby="ethos-title" className="relative isolate overflow-hidden border-t border-line py-20 sm:py-28">
@@ -389,7 +387,7 @@ function Ethos() {
             Built to hold things up.
           </h2>
           <p className="mt-4 text-lg text-text-2">
-            In the old story, Atlas carries the sky. AtlasOS starts smaller: your machine, and the
+            In architecture, a telamon is a carved figure that holds up a roof. Telamon OS starts smaller: your machine, and the
             work you do on it, every day.
           </p>
           <p className="mt-4 text-text-2">
@@ -416,15 +414,14 @@ function Footer() {
       <div className="wrap flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-xl space-y-2">
           <p>
-            AtlasOS is a personal project, built on{" "}
+            Telamon OS is a personal project, built on{" "}
             <a className={link} href="https://fedoraproject.org">Fedora</a>,{" "}
             <a className={link} href="https://kde.org">KDE</a> and{" "}
             <a className={link} href="https://bootc-dev.github.io/bootc/">bootc</a>. It&apos;s young:
             keep backups, as you would anyway.
           </p>
           <p>
-            Apache-2.0. Not affiliated with Fedora or KDE, and not related to AtlasOS, the Windows
-            modification by Atlas-OS.
+            Apache-2.0. Not affiliated with Fedora or KDE.
           </p>
         </div>
         <nav aria-label="Project" className="flex flex-wrap gap-x-6 gap-y-2">

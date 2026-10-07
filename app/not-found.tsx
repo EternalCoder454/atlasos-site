@@ -8,7 +8,7 @@ export default function NotFound() {
         <p className="mt-3 text-text-2">There&apos;s nothing at this address.</p>
         <p className="mt-6">
           <Link href="/" className="text-violet-hi underline decoration-violet-hi/40 underline-offset-4 hover:decoration-violet-hi">
-            Back to AtlasOS
+            Back to Telamon OS
           </Link>
         </p>
       </div>
