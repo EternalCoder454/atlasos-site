@@ -311,7 +311,7 @@ const leftOut = [
 ];
 const swapped = [
   ["Konsole", "Ghostty"],
-  ["Firefox", "Brave Origin"],
+  ["Firefox", "Brave"],
 ];
 
 function Less() {
