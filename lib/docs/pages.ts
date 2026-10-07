@@ -113,8 +113,8 @@ export function docsOpenGraph(title: string, description: string, href: string) 
 }
 
 const overviewFallback = {
-  title: "Atlas Framework",
-  summary: "The shared base every Atlas app builds on: the Atlas.Ui controls, the icons and the Rust crates.",
+  title: "Telamon Framework",
+  summary: "The shared base every Telamon app builds on: the Telamon.Ui controls, the icons and the Rust crates.",
 };
 
 /* The overview's title and summary: from the frontmatter of the docs' own

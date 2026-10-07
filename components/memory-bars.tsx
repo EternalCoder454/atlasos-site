@@ -1,9 +1,9 @@
-/* Idle memory, stock Kinoite against AtlasOS, from the README's table.
+/* Idle memory, stock Kinoite against Telamon OS, from the README's table.
    components/motion.tsx grows the bars and counts the numbers up once they
    come into view, because the comparison is the point. Rendered at their
    real widths and values, which is what they end on.
 
-   Stock Kinoite is the reference, set back in grey. AtlasOS is the answer,
+   Stock Kinoite is the reference, set back in grey. Telamon OS is the answer,
    so its row gets the light: its own mark, the brighter number, the
    gradient bar with a glow, and the README's own words for the gap. */
 const stock = 2075;
@@ -37,7 +37,7 @@ export function MemoryBars() {
           <span className="flex items-center gap-2 font-semibold text-text">
             {/* eslint-disable-next-line @next/next/no-img-element -- a 3 KB SVG */}
             <img src="/brand/atlas-mark.svg" alt="" width={20} height={20} className="size-5" />
-            AtlasOS
+            Telamon OS
             <span className="rounded-full bg-violet/20 px-2 py-0.5 text-xs font-medium text-violet-hi">
               about half the memory
             </span>

@@ -1,4 +1,4 @@
-/* The space around AtlasOS: stars, the odd shooting star, a planet's
+/* The space around Telamon OS: stars, the odd shooting star, a planet's
    horizon and an orbit. All of it decoration (aria-hidden), all of it CSS
    or a few Motion lines in components/motion.tsx, and all of it still when
    motion is reduced (globals.css).
@@ -80,7 +80,7 @@ export function Horizon() {
   );
 }
 
-/* AtlasOS's mark with three tilted orbits turning slowly around it, each
+/* Telamon OS's mark with three tilted orbits turning slowly around it, each
    carrying a small light. The orbits are real circles laid back in 3D
    (globals.css), and each light turns back to face you as it goes, so it
    stays round. */

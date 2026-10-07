@@ -14,14 +14,14 @@ export async function GET() {
     "",
     `> ${site.description}`,
     "",
-    `- [AtlasOS on GitHub](${site.repo}): the source and the README`,
+    `- [Telamon OS on GitHub](${site.repo}): the source and the README`,
     "",
   ];
   if (index) {
     lines.push(
-      "## Atlas Framework API",
+      "## Telamon Framework API",
       "",
-      `Reference for atlas-framework ${mdText(index.version)}, the shared base the Atlas apps build on. Every page below is Markdown; ${siteUrl}/framework/llms-full.txt has them all in one file.`,
+      `Reference for the Telamon framework ${mdText(index.version)}, the shared base the Telamon apps build on. Every page below is Markdown; ${siteUrl}/framework/llms-full.txt has them all in one file.`,
       "",
       `- [Overview](${siteUrl}/framework.md)`,
     );

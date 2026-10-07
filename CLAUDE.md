@@ -1,11 +1,11 @@
-# AtlasOS Site
+# Telamon OS Site
 
-The AtlasOS website and ISO downloads, at telamon.eterneon.net. See
+The Telamon OS website and ISO downloads, at telamon.eterneon.net. See
 README.md for how downloads are protected and how to deploy.
 
 ## Rules
 
-- Every claim on the page comes from the AtlasOS README
+- Every claim on the page comes from the Telamon OS README
   (`~/Documents/AtlasOS/README.md`). Don't add numbers or features it doesn't state.
 - Adding a dependency needs the user's approval.
 - Animation is vanilla Motion, all in `components/motion.tsx`: `animate` from
@@ -24,6 +24,13 @@ README.md for how downloads are protected and how to deploy.
 - The download limits live in `deploy/compose.yaml` (nginx) and
   `lib/rate-limit.ts` (links per hour); README.md describes them. Change
   all three together.
+
+- Still named "Atlas" on purpose, because the backend, the CI and the GitHub
+  repos haven't been renamed yet: the ISO and JSON names under `/dl/`
+  (`atlasos*.json`, `atlasos-44.*.iso`), the image refs, the `atlasos-dl` and
+  `atlasos-site` services, `/srv/atlasos-site`, the Umami IDs, the repo URLs,
+  the `atlas` command and the recorded terminal session, the logo file and
+  the `public/screens` screenshots. Rename them together with the backend.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

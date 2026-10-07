@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { imageIds, type ImageId } from "@/lib/images";
 
-/* The current ISO of each image, from the <image>.json that AtlasOS's CI
+/* The current ISO of each image, from the <image>.json that Telamon OS's CI
    (iso.yml) uploads beside it. The container mounts that folder read-only
    at /data. A missing or malformed file means "no ISO yet", never an
    error page: the rest of the site does not depend on it. */

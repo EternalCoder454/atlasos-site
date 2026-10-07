@@ -7,12 +7,12 @@ export type ImageId = (typeof imageIds)[number];
 
 export const images: Record<ImageId, { name: string; ref: string; forWhat: string }> = {
   atlasos: {
-    name: "AtlasOS",
+    name: "Telamon OS",
     ref: "ghcr.io/eternalcoder454/atlasos:stable",
     forWhat: "Intel and AMD graphics, and older NVIDIA cards on the open nouveau driver.",
   },
   "atlasos-nvidia": {
-    name: "AtlasOS for NVIDIA",
+    name: "Telamon OS for NVIDIA",
     ref: "ghcr.io/eternalcoder454/atlasos-nvidia:stable",
     forWhat:
       "GeForce GTX 16 and RTX 20 series or newer, with NVIDIA's own driver (open kernel modules).",

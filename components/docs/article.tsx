@@ -105,7 +105,7 @@ export function DocsUnavailable() {
     <div className="max-w-xl py-10">
       <h1 className="text-3xl font-semibold tracking-tight">The docs can&apos;t be loaded right now</h1>
       <p className="mt-3 text-text-2">
-        They come from the atlas-framework repository on GitHub, which didn&apos;t answer. Try again in a minute, or read them
+        They come from the Telamon framework repository on GitHub, which didn&apos;t answer. Try again in a minute, or read them
         there:{" "}
         <a className="text-violet-hi underline underline-offset-4" href="https://github.com/EternalCoder454/atlas-framework/tree/main/docs/reference">
           docs/reference

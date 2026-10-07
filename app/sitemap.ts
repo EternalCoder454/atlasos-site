@@ -3,7 +3,7 @@ import { readingOrder } from "@/lib/docs/pages";
 import { docsIndex } from "@/lib/docs/source";
 import { siteUrl } from "@/lib/site";
 
-/* The docs come from atlas-framework at runtime, so the list is too. */
+/* The docs come from the Telamon framework repo at runtime, so the list is too. */
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

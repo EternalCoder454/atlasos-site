@@ -26,7 +26,7 @@ function Option({ id, release }: { id: ImageId; release: Release | null }) {
         {id === "atlasos-nvidia" && (
           <p className="mt-2 text-sm text-text-3">
             With Secure Boot on, the installer gives you a one-time password, and you confirm the
-            AtlasOS key with it on the first restart. Once.{" "}
+            Telamon OS key with it on the first restart. Once.{" "}
             <a href={links.nvidia} className="text-violet-hi underline decoration-violet-hi/40 underline-offset-4 hover:decoration-violet-hi">
               More about this
             </a>
@@ -95,7 +95,7 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
       <div className="wrap">
         <div data-reveal-children className="max-w-2xl">
           <h2 id="download-title" className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Get AtlasOS
+            Get Telamon OS
           </h2>
           <p className="mt-4 text-lg text-text-2">
             One ISO per graphics setup. It boots a live session with the installer already open,
@@ -183,7 +183,7 @@ export function Download({ releases }: { releases: Record<ImageId, Release | nul
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-sm text-text-3">AtlasOS is tuned for and tested on 8 GB of memory.</p>
+          <p className="mt-3 text-sm text-text-3">Telamon OS is tuned for and tested on 8 GB of memory.</p>
         </div>
 
         <div id="switch" data-reveal className="mt-16 rounded-[var(--radius-card)] border border-line bg-ink-0 p-6 sm:p-8">
