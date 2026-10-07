@@ -1,6 +1,6 @@
 # AtlasOS Site
 
-The AtlasOS website and ISO downloads, at atlasos.eterneon.net. See
+The AtlasOS website and ISO downloads, at telamon.eterneon.net. See
 README.md for how downloads are protected and how to deploy.
 
 ## Rules

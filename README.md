@@ -1,6 +1,6 @@
 # AtlasOS Site
 
-The website for AtlasOS at https://atlasos.eterneon.net, with the ISO
+The website for AtlasOS at https://telamon.eterneon.net, with the ISO
 downloads. Next.js 16, Tailwind 4 and Motion, the same stack as the Eterneon
 site; one page, no `src` directory.
 

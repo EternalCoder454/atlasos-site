@@ -1,4 +1,4 @@
-# The ISO download server, behind Caddy at atlasos.eterneon.net/dl/*.iso.
+# The ISO download server, behind Caddy at telamon.eterneon.net/dl/*.iso.
 #
 # Caddy serves the site and the small public files (<image>.json, .sha256);
 # only the ISOs come here, because Caddy can't cap connections or bandwidth

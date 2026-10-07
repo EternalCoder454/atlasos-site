@@ -1,4 +1,4 @@
-# atlasos.eterneon.net, in /srv/atlasos-site on eterneon-vps.
+# telamon.eterneon.net, in /srv/atlasos-site on eterneon-vps.
 #
 # Two services on a network of their own, atlasos_inside (172.29.0.0/24),
 # that the matrix stack's Caddy also joins (see /srv/matrix/compose.yaml) and

@@ -70,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             serves the script and its endpoint at /_p/ on this host, so the
             policy's 'self' covers both; data-domains keeps dev and preview
             hosts out of the numbers. */}
-        <script defer src="/_p/p.js" data-website-id="4f36100d-43ce-4068-83af-5946b53e1e1e" data-domains="atlasos.eterneon.net" />
+        <script defer src="/_p/p.js" data-website-id="4f36100d-43ce-4068-83af-5946b53e1e1e" data-domains="telamon.eterneon.net" />
       </head>
       <body>
         <script
