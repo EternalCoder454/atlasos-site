@@ -15,7 +15,7 @@ COPY . .
 
 # Substituted into the bundle at build time: canonical links, the sitemap
 # and share cards all name this host.
-ARG NEXT_PUBLIC_SITE_URL=https://atlasos.eterneon.net
+ARG NEXT_PUBLIC_SITE_URL=https://telamon.eterneon.net
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build

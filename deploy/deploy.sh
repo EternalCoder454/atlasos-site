@@ -13,7 +13,7 @@ cd "$(dirname "$0")/.."
 
 host=eterneon-vps
 dir=/srv/atlasos-site
-url=https://atlasos.eterneon.net
+url=https://telamon.eterneon.net
 rev=$(git rev-parse --short HEAD)
 [ -z "$(git status --porcelain)" ] || rev="$rev-dirty"
 # Quoted for the remote shell, whatever the commit subject holds.

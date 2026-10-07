@@ -1,7 +1,7 @@
 /* The facts the page repeats. Everything here comes from the AtlasOS
    README; a claim that is not there does not go here either. */
 
-export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://atlasos.eterneon.net";
+export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://telamon.eterneon.net";
 
 export const site = {
   name: "AtlasOS Linux",
